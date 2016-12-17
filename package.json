@@ -1,0 +1,17 @@
+{
+  "name": "kotoparser",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^3.4.6"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "cumul <gg6123@naver.com>",
+  "license": "MIT"
+}
