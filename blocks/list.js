@@ -1,74 +1,86 @@
 const {Block} = require('./block.js');
+const {CharScanner} = require('../scanners/CharScanner.js');
 
-class ListItemBlock extends Block
-{
-	constructor(isOrdered, indent, content)
-	{
+class BulletListBlock extends Block {
+	constructor(items) {
 		super();
 
-		this.isOrdered = isOrdered;
-		this.indent = indent;
-		this.content = content;
+		this.items = items;
 	}
 
-	static match(scanner)
-	{
-		scanner.mark();
-		scanner.skipLineSpaces();
-		scanner.mark();
+	static match(scanner) {
+		const items = [];
 
-		const isOrdered = (() => {
-			if (scanner.assert('*') || scanner.assert('-') || scanner.assert('+'))
-			{
-				scanner.skip(+1);
+		let lastBullet = null;
+		let relativeIndent = 0;
 
-				if (scanner.assert(' '))
-				{
-					scanner.skip(+1);
-					return false;
-				}
+		while (!scanner.isAtEnd) {
+			scanner.mark();
 
-				return null;
-			}
+			scanner.mark();
+			scanner.skipLineSpaces();
 
-			if (!isNaN(scanner.currentChar))
-			{
-				scanner.skip(+1);
-
-				if (scanner.assert('. '))
-				{
+			if (lastBullet === null) {
+				if (scanner.assert('* ') || scanner.assert('- ') || scanner.assert('+ ')) {
 					scanner.skip(+2);
-					return true;
+					lastBullet = scanner.pop();
+				} else {
+					scanner.return();
+					return null;
+				}
+			} else {
+				if (scanner.assert(lastBullet.trim() + ' ')) {
+					scanner.skip(+2);
+
+					const bullet = scanner.pop();
+
+					if (bullet.length > lastBullet.length) {
+						relativeIndent++;
+					} else if (bullet.length < lastBullet.length) {
+						relativeIndent--;
+					}
+
+					if (relativeIndent < 0) {
+						scanner.return();
+						return items;
+					}
+
+					lastBullet = bullet;
+				} else {
+					scanner.return();
+					return items;
 				}
 			}
 
-			return null;
-		})();
+			scanner.reset();
 
-		if (isOrdered === null)
-		{
-			scanner.return();
-			scanner.return();
-			return false;
+			scanner.mark();
+			scanner.skipToLineEnd();
+
+			items.push({
+				indent: lastBullet.length - 2,
+				content: scanner.pop()
+			});
+
+			scanner.skipLineEnds();
 		}
 
-		scanner.mark();
-		scanner.skipToLineEnd();
-
-		const content = scanner.pop();
-		const indent = -(scanner.pop().length - scanner.pop().length);
-
-		return {
-			isOrdered: isOrdered,
-			indent: indent,
-			content: content
-		};
+		return items;
 	}
 
-	static parse(scanner, data)
-	{
-		return new ListItemBlock(data.isOrdered, data.indent, data.content);
+	static parse(scanner, data) {
+		const items = [];
+
+		data.forEach(function (item, index) {
+			if (index === 0 || items[items.length - 1][0].indent !== item.indent) {
+				items.push([item]);
+			} else {
+				items[items.length - 1].push(item);
+			}
+		});
+
+		return new BulletListBlock(items);
 	}
 }
 
-exports.ListItemBlock = ListItemBlock;
+exports.BulletListBlock = BulletListBlock;

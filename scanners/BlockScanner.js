@@ -1,34 +1,27 @@
 const Promise = require('bluebird');
 const {CharScanner} = require('./CharScanner.js');
 
-class BlockScanner extends CharScanner
-{
-	constructor(buffer, blockTypes)
-	{
+class BlockScanner extends CharScanner {
+	constructor(buffer, blockTypes) {
 		super(buffer);
 
 		this.blockTypes = blockTypes;
 		this.blocks = [];
 	}
 
-	parse()
-	{
-		while (!this.isAtEnd)
-		{
+	parse() {
+		while (!this.isAtEnd) {
 			const match = this.matchBlockType();
-			
+
 			const block = match.type.parse(this, match.data);
 			this.skipLineEnds();
 			this.reset();
 
 			this.blocks.push(block);
 		}
-
-		//this.integrate();
 	}
 
-	render()
-	{
+	render() {
 		return Promise.map(this.blocks, function(block) {
 			return block.render();
 		}).then(function(results) {
@@ -36,17 +29,14 @@ class BlockScanner extends CharScanner
 		});
 	}
 
-	matchBlockType()
-	{
-		for (let i = 0; i < this.blockTypes.length; i++)
-		{
+	matchBlockType() {
+		for (let i = 0; i < this.blockTypes.length; i++) {
 			const blockType = this.blockTypes[i];
 
 			const result = blockType.match(this);
 			this.reset();
 
-			if (result)
-			{
+			if (result) {
 				return { type: blockType, data: result };
 			}
 		}

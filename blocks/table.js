@@ -1,24 +1,19 @@
 const {Block} = require('./block.js');
 
-class TableRowBlock extends Block
-{
-	constructor()
-	{
+class TableRowBlock extends Block {
+	constructor() {
 		super();
 	}
 
-	static match(scanner)
-	{
-		if (['|', '^'].indexOf(scanner.currentChar) < 0)
-		{
+	static match(scanner) {
+		if (['|', '^'].indexOf(scanner.currentChar) < 0) {
 			return false;
 		}
 
 		scanner.mark();
 		scanner.skipToLineEnd();
 
-		if (['|', '^'].indexOf(scanner.getCharAtOffset(-1)) < 0)
-		{
+		if (['|', '^'].indexOf(scanner.getCharAtOffset(-1)) < 0) {
 			scanner.return();
 			return false;
 		}
@@ -26,8 +21,7 @@ class TableRowBlock extends Block
 		return { content: scanner.pop() };
 	}
 
-	static parse(scanner, data)
-	{
+	static parse(scanner, data) {
 		const block = new TableRowBlock();
 		block.children = [];
 

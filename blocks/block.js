@@ -1,21 +1,16 @@
-class Block
-{
-	constructor()
-	{
+class Block {
+	constructor() {
 	}
 
-	static match(scanner)
-	{
+	static match(scanner) {
 		return false;
 	}
 
-	static parse(scanner, data)
-	{
+	static parse(scanner, data) {
 		return new Block();
 	}
 
-	render()
-	{
+	render() {
 		return Promise.resolve('');
 	}
 }
