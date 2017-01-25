@@ -1,4 +1,5 @@
 const {Block} = require('./block.js');
+const {CharScanner} = require('../scanners/CharScanner.js');
 
 // TODO: Integration needed
 
@@ -6,9 +7,7 @@ class ListItemBlock extends Block {
 	constructor(isOrdered, indent, content) {
 		super();
 
-		this.isOrdered = isOrdered;
-		this.indent = indent;
-		this.content = content;
+		this.items = items;
 	}
 
 	static match(scanner) {
@@ -24,9 +23,11 @@ class ListItemBlock extends Block {
 					scanner.skip(+1);
 					return false;
 				}
+			} else {
+				if (scanner.assert(lastBullet.trim() + ' ')) {
+					scanner.skip(+2);
 
-				return null;
-			}
+					const bullet = scanner.pop();
 
 			if (!isNaN(scanner.currentChar)) {
 				scanner.skip(+1);
@@ -37,8 +38,7 @@ class ListItemBlock extends Block {
 				}
 			}
 
-			return null;
-		})();
+			scanner.reset();
 
 		if (isOrdered === null) {
 			scanner.return();
@@ -46,17 +46,15 @@ class ListItemBlock extends Block {
 			return false;
 		}
 
-		scanner.mark();
-		scanner.skipToLineEnd();
+			items.push({
+				indent: lastBullet.length - 2,
+				content: scanner.pop()
+			});
 
-		const content = scanner.pop();
-		const indent = -(scanner.pop().length - scanner.pop().length);
+			scanner.skipLineEnds();
+		}
 
-		return {
-			isOrdered: isOrdered,
-			indent: indent,
-			content: content
-		};
+		return items;
 	}
 
 	static parse(scanner, data) {
@@ -64,4 +62,4 @@ class ListItemBlock extends Block {
 	}
 }
 
-exports.ListItemBlock = ListItemBlock;
+exports.BulletListBlock = BulletListBlock;
