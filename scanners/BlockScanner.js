@@ -1,22 +1,19 @@
-const Promise = require('bluebird');
+const async = require('async');
 const {CharScanner} = require('./CharScanner.js');
+const {matchType} = require('./shorthands');
 
-class BlockScanner extends CharScanner
-{
-	constructor(buffer, blockTypes)
-	{
+class BlockScanner extends CharScanner {
+	constructor(buffer, blockTypes) {
 		super(buffer);
 
 		this.blockTypes = blockTypes;
 		this.blocks = [];
 	}
 
-	parse()
-	{
-		while (!this.isAtEnd)
-		{
-			const match = this.matchBlockType();
-			
+	parse() {
+		while (!this.isAtEnd) {
+			const match = matchType(this.blockTypes, this);
+
 			const block = match.type.parse(this, match.data);
 			this.skipLineEnds();
 			this.reset();
@@ -24,32 +21,23 @@ class BlockScanner extends CharScanner
 			this.blocks.push(block);
 		}
 
-		//this.integrate();
+		this.integrate();
 	}
 
-	render()
-	{
-		return Promise.map(this.blocks, function(block) {
-			return block.render();
-		}).then(function(results) {
-			return results.join('');
+	integrate() {
+		const results = [];
+
+		this.blocks.forEach((block, index) => {
+			results = block.constructor.integrate(results, block, this.blocks[index]);
 		});
+
+		this.blocks = results;
 	}
 
-	matchBlockType()
-	{
-		for (let i = 0; i < this.blockTypes.length; i++)
-		{
-			const blockType = this.blockTypes[i];
-
-			const result = blockType.match(this);
-			this.reset();
-
-			if (result)
-			{
-				return { type: blockType, data: result };
-			}
-		}
+	render(callback) {
+		async.map(this.blocks, function(block, callback) {
+			block.render(callback);
+		}, callback);
 	}
 }
 

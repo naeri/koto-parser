@@ -1,24 +1,19 @@
 const Promise = require('bluebird');
 const {Block} = require('./block.js');
 
-class BlockquoteBlock extends Block
-{
-	constructor(content)
-	{
+class BlockquoteBlock extends Block {
+	constructor(content) {
 		super();
 
 		this.content = content;
 	}
 
-	static match(scanner)
-	{
-		return scanner.assert('>');
+	static match(scanner) {
+		return scanner.assert('> ');
 	}
 
-	static parse(scanner, data)
-	{
-		scanner.skip(+1);
-		scanner.skipLineSpaces();
+	static parse(scanner, data) {
+		scanner.skip(+2);
 		scanner.mark();
 
 		scanner.skipToLineEnd();
@@ -27,9 +22,8 @@ class BlockquoteBlock extends Block
 		return new BlockquoteBlock(content);
 	}
 
-	render()
-	{
-		return Promise.resolve('<blockquote>' + this.content + '</blockquote>');
+	render(options, callback) {
+		callback(null, `<blockquote>${this.content}</blockquote>`);
 	}
 }
 
