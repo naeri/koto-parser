@@ -11,9 +11,8 @@ class Block {
 		callback(null, '');
 	}
 
-	static integrate(results, curr, next) {
+	static integrate(results, prev, curr) {
 		results.push(curr);
-		return results;
 	}
 }
 

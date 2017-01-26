@@ -17,7 +17,7 @@ class ParagraphBlock extends Block {
 		return new ParagraphBlock(scanner.pop());
 	}
 
-	render(callback) {
+	render(options, callback) {
 		callback(null, `<p>${this.content}</p>`);
 	}
 }

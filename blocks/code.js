@@ -22,9 +22,9 @@ class CodeBlock extends Block {
 		scanner.skip(+3);
 		scanner.skipLineSpaces();
 
-		// 언어 설정
-		const data = {};
+		const data = { language: null, content: null };
 
+		// 언어 설정
 		if (!scanner.isAtLineEnd) {
 			scanner.mark();
 			scanner.skipToLineEnd();
