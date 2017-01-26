@@ -1,7 +1,6 @@
 const _ = require('lodash');
 const async = require('async');
 const {Block} = require('./block.js');
-const {CharScanner} = require('../scanners/CharScanner.js');
 
 class ListBlock extends Block {
 	constructor(items, indentUnit) {

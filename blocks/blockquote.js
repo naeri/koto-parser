@@ -1,4 +1,3 @@
-const Promise = require('bluebird');
 const {Block} = require('./block.js');
 
 class BlockquoteBlock extends Block {
