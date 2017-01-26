@@ -8,7 +8,7 @@ class BoldToken extends Token {
 	}
 
 	static match(scanner) {
-		if (!scanner.assert('**')) {
+		if (!scanner.ahead('**')) {
 			return null;
 		}
 
@@ -38,7 +38,7 @@ class ItalicToken extends Token {
 	}
 
 	static match(scanner) {
-		if (!scanner.assert('*')) {
+		if (!scanner.ahead('*')) {
 			return null;
 		}
 

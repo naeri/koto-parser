@@ -1,4 +1,5 @@
 const {Block} = require('./block.js');
+const {InlineScanner} = require('../scanners/InlineScanner.js');
 
 class BlockquoteBlock extends Block {
 	constructor(content) {
@@ -8,7 +9,7 @@ class BlockquoteBlock extends Block {
 	}
 
 	static match(scanner) {
-		return scanner.assert('> ');
+		return scanner.ahead('> ');
 	}
 
 	static parse(scanner, data) {
@@ -22,7 +23,13 @@ class BlockquoteBlock extends Block {
 	}
 
 	render(options, callback) {
-		callback(null, `<blockquote>${this.content}</blockquote>`);
+		InlineScanner.parseAndRender(this.content, options, function(error, content) {
+			if (error) {
+				callback(error, null);
+			} else {
+				callback(null, `<blockquote>${content}</blockquote>`);
+			}
+		});
 	}
 }
 

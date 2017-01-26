@@ -33,7 +33,7 @@ class CharScanner {
 		return this.getCharAt(position);
 	}
 
-	assert(string) {
+	ahead(string) {
 		return (this.buffer.substr(this.position, string.length) === string);
 	}
 
@@ -49,19 +49,8 @@ class CharScanner {
 		return CharScanner.isLineEnd(this.currentChar);
 	}
 
-	mark(position) {
-		if (position === undefined) {
-			position = this.position;
-		}
-		else if (position < 0 || position > this.length) {
-			throw positionError;
-		}
-
-		this.markers.push(position);
-	}
-
-	reset() {
-		this.markers = [];
+	mark() {
+		this.markers.push(this.position);
 	}
 
 	pop() {
@@ -78,8 +67,12 @@ class CharScanner {
 		}
 	}
 
-	return() {
+	popAndBack() {
 		this.position = this.markers.pop();
+	}
+
+	popAll() {
+		this.markers = [];
 	}
 
 	skip(length) {

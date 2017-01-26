@@ -1,15 +1,9 @@
-function parseAndRender(scannerType, ...args) {
-	const scanner = new (Function.prototype.bind.apply(scannerType, args));
-	scanner.parse();
-	return scanner.render();
-}
-
 function matchType(types, scanner) {
 	for (let i = 0; i < types.length; i++) {
 		const type = types[i];
 
 		const result = type.match(scanner);
-		scanner.reset();
+		scanner.popAll();
 
 		if (result) {
 			return { type: type, data: result };
@@ -17,5 +11,4 @@ function matchType(types, scanner) {
 	}
 }
 
-exports.parseAndRender = parseAndRender;
 exports.matchType = matchType;

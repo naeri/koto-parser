@@ -8,7 +8,7 @@ class CodeToken extends Token {
 	}
 
 	static match(scanner) {
-		if (!scanner.assert('`')) {
+		if (!scanner.ahead('`')) {
 			return null;
 		}
 

@@ -1,4 +1,5 @@
 const {Block} = require('./block.js');
+const {InlineScanner} = require('../scanners/InlineScanner.js');
 
 class ParagraphBlock extends Block {
 	constructor(content) {
@@ -18,7 +19,13 @@ class ParagraphBlock extends Block {
 	}
 
 	render(options, callback) {
-		callback(null, `<p>${this.content}</p>`);
+		InlineScanner.parseAndRender(this.content, options, function(error, content) {
+			if (error) {
+				callback(error, null);
+			} else {
+				callback(null, `<p>${content}</p>`);
+			}
+		});
 	}
 }
 

@@ -1,23 +1,23 @@
 const _ = require('lodash');
+const async = require('async');
 const {CharScanner} = require('./CharScanner.js');
 const {matchType} = require('./shorthands.js');
 
 class InlineScanner extends CharScanner {
-
-	constructor(buffer, tokenTypes) {
+	constructor(buffer, options) {
 		super(buffer);
 
-		this.tokenTypes = tokenTypes;
+		this.options = options;
 		this.tokens = [];
 	}
 
 	parse() {
 		while (!this.isAtEnd) {
-			let match = matchType(this.tokenTypes, this);
+			let match = matchType(this.options.tokenTypes, this);
 
 			if (match) {
 				const token = match.type.parse(this, match.data);
-				this.reset();
+				this.popAll();
 
 				this.tokens.push(token);
 			} else {
@@ -32,17 +32,29 @@ class InlineScanner extends CharScanner {
 
 			this.skip(+1);
 		}
+
+		return this;
 	}
 
-	render() {
-		return Promise.map(this.tokens, function (token) {
+	render(callback) {
+		async.map(this.tokens, (token, callback) => {
 			if (_.isArray(token)) {
-				return token.join('');
+				callback(null, token.join(''));
 			} else {
-				return token.render();
+				token.render(this.options, callback);
 			}
-		}).then(function (results) {
-			return results.join('');
+		}, function(error, tokens) {
+			if (error) {
+				callback(error, null);
+			} else {
+				callback(null, tokens.join(''));
+			}
 		});
 	}
+
+	static parseAndRender(buffer, options, callback) {
+		new InlineScanner(buffer, options).parse().render(callback);
+	}
 }
+
+exports.InlineScanner = InlineScanner;

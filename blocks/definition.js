@@ -1,5 +1,6 @@
 const async = require('async');
 const {Block} = require('./block.js');
+const {InlineScanner} = require('../scanners/InlineScanner.js');
 
 function integrate(results, prev, curr) {
 	if (prev instanceof DefinitionBlock) {
@@ -41,16 +42,14 @@ class TermBlock extends Block {
 	}
 
 	static match(scanner) {
-		return scanner.assert('; ');
+		return scanner.ahead('; ');
 	}
 
 	static parse(scanner, data) {
 		scanner.skip(2);
-		scanner.mark();
 
-		while (!scanner.isAtLineEnd && !scanner.assert(': ')) {
-			scanner.skip(1);
-		}
+		scanner.mark();
+		scanner.find(': ');
 
 		return new TermBlock(scanner.pop());
 	}
@@ -60,7 +59,13 @@ class TermBlock extends Block {
 	}
 
 	render(options, callback) {
-		callback(null, `<dt>${this.content}</dt>`)
+		InlineScanner.parseAndRender(this.content, options, function(error, content) {
+			if (error) {
+				callback(error, null);
+			} else {
+				callback(null, `<dt>${content}</dt>`);
+			}
+		});
 	}
 }
 
@@ -72,7 +77,7 @@ class DescriptionBlock extends Block {
 	}
 
 	static match(scanner) {
-		return scanner.assert(': ');
+		return scanner.ahead(': ');
 	}
 
 	static parse(scanner, data) {
@@ -89,7 +94,13 @@ class DescriptionBlock extends Block {
 	}
 
 	render(options, callback) {
-		callback(null, `<dd>${this.content}</dd>`)
+		InlineScanner.parseAndRender(this.content, options, function(error, content) {
+			if (error) {
+				callback(error, null);
+			} else {
+				callback(null, `<dd>${content}</dd>`);
+			}
+		});
 	}
 }
 

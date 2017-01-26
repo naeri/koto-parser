@@ -13,8 +13,8 @@ class CodeBlock extends Block {
 		scanner.mark();
 
 		// 여는 태그의 유효성 확인
-		if (!scanner.assert('```') || scanner.assert('````')) {
-			scanner.return();
+		if (!scanner.ahead('```') || scanner.ahead('````')) {
+			scanner.popAndBack();
 			return null;
 		}
 
@@ -37,17 +37,18 @@ class CodeBlock extends Block {
 		// 닫는 태그의 유효성 확인
 		while (scanner.find('\n```')) {
 			if (!CharScanner.isLineEnd(scanner.getCharAtOffset(+4))) {
+				scanner.skip(+4);
 				continue;
 			}
 
 			// 코드 내용 설정
 			data['content'] = scanner.pop();
-			scanner.skip(+4)
+			scanner.skip(+4);
 
 			return data;
 		}
 
-		scanner.return();
+		scanner.popAndBack();
 		return null;
 	}
 

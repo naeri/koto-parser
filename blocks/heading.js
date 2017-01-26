@@ -9,12 +9,11 @@ class HeadingBlock extends Block {
 	}
 
 	static match(scanner) {
-		return scanner.assert('#');
+		return scanner.ahead('#');
 	}
 
 	static parse(scanner, data) {
-		let level = 1;
-		scanner.skip(+1);
+		let level = 0;
 
 		while (scanner.currentChar === '#') {
 			level++;

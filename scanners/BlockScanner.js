@@ -1,33 +1,33 @@
 const _ = require('lodash');
 const async = require('async');
 const {CharScanner} = require('./CharScanner.js');
-const {matchType} = require('./shorthands');
+const {matchType} = require('./shorthands.js');
 
 class BlockScanner extends CharScanner {
-	constructor(buffer, blockTypes, options) {
+	constructor(buffer, options) {
 		super(buffer);
 
-		this.blockTypes = blockTypes;
 		this.options = options;
-
 		this.blocks = [];
 	}
 
 	parse() {
 		while (!this.isAtEnd) {
-			const match = matchType(this.blockTypes, this);
+			const match = matchType(this.options.blockTypes, this);
 
 			const block = match.type.parse(this, match.data);
 			this.skipLineEnds();
-			this.reset();
+			this.popAll();
 
 			this.blocks.push(block);
 		}
 
-		this.integrate();
+		this._integrate();
+
+		return this;
 	}
 
-	integrate() {
+	_integrate() {
 		const results = [];
 
 		this.blocks.forEach((curr, index) => {
@@ -40,7 +40,17 @@ class BlockScanner extends CharScanner {
 	render(callback) {
 		async.map(this.blocks, (block, callback) => {
 			block.render(this.options, callback);
-		}, callback);
+		}, function(error, blocks) {
+			if (error) {
+				callback(error, null);
+			} else {
+				callback(null, blocks.join(''));
+			}
+		});
+	}
+
+	static parseAndRender(buffer, options, callback) {
+		new BlockScanner(buffer, options).parse().render(callback);
 	}
 }
 

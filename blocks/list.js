@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const async = require('async');
 const {Block} = require('./block.js');
+const {InlineScanner} = require('../scanners/InlineScanner.js');
 
 class ListBlock extends Block {
 	constructor(items, indentUnit) {
@@ -93,10 +94,10 @@ class ListItemBlock extends Block {
 		scanner.mark();
 
 		const isOrdered = (() => {
-			if (scanner.assert('*') || scanner.assert('-') || scanner.assert('+')) {
+			if (scanner.ahead('*') || scanner.ahead('-') || scanner.ahead('+')) {
 				scanner.skip(+1);
 
-				if (scanner.assert(' ')) {
+				if (scanner.ahead(' ')) {
 					scanner.skip(+1);
 					return false;
 				}
@@ -107,7 +108,7 @@ class ListItemBlock extends Block {
 			if (!isNaN(scanner.currentChar)) {
 				scanner.skip(+1);
 
-				if (scanner.assert('. ')) {
+				if (scanner.ahead('. ')) {
 					scanner.skip(+2);
 					return true;
 				}
@@ -117,8 +118,8 @@ class ListItemBlock extends Block {
 		})();
 
 		if (isOrdered === null) {
-			scanner.pop();
-			scanner.return();
+			scanner.popAndBack();
+			scanner.popAndBack();
 			return null;
 		}
 
@@ -148,7 +149,13 @@ class ListItemBlock extends Block {
 	}
 
 	render(options, callback) {
-		callback(null, `<li>${this.content}</li>`);
+		InlineScanner.parseAndRender(this.content, options, function(error, content) {
+			if (error) {
+				callback(error, null);
+			} else {
+				callback(null, `<li>${content}</li>`);
+			}
+		});
 	}
 }
 
