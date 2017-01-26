@@ -1,9 +1,8 @@
-const POR = new Error('Position out of range.');
+const positionError = new Error('Position out of range.');
 
 class CharScanner {
 	constructor(buffer) {
-		this.buffer = buffer.split('\r\n').join('\n')
-			.split('\r').join('\n');
+		this.buffer = buffer.split('\r\n').join('\n').split('\r').join('\n');
 		this.position = 0;
 		this.markers = [];
 	}
@@ -28,7 +27,7 @@ class CharScanner {
 		let position = this.position + offset;
 
 		if (position < 0 || position > this.length) {
-			throw POR;
+			throw positionError;
 		}
 
 		return this.getCharAt(position);
@@ -55,7 +54,7 @@ class CharScanner {
 			position = this.position;
 		}
 		else if (position < 0 || position > this.length) {
-			throw POR;
+			throw positionError;
 		}
 
 		this.markers.push(position);
@@ -87,7 +86,7 @@ class CharScanner {
 		let position = this.position + length;
 
 		if (position < 0 || position > this.length) {
-			throw POR;
+			throw positionError;
 		}
 
 		this.position += length;
