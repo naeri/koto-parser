@@ -10,8 +10,12 @@ class ListBlock extends Block {
 		this.items = items;
 		this.indentUnit = (indentUnit || -1);
 
-		this.startTag = items[0].isOrdered ? '<ol>' : '<ul>';
-		this.endTag = items[0].isOrdered ? '</ol>' : '</ul>';
+		this.startTag = this.firstItem.isOrdered ? '<ol>' : '<ul>';
+		this.endTag = this.firstItem.isOrdered ? '</ol>' : '</ul>';
+	}
+
+	get firstItem() {
+		return _.first(this.items);
 	}
 
 	get lastItem() {
@@ -27,20 +31,32 @@ class ListBlock extends Block {
 	}
 
 	isAppendable(item) {
-		if (this.items[0].indent > item.indent) {
+		// When dedented than the first item
+		if (this.firstItem.indent > item.indent) {
 			return false;
 		}
 
-		if (this.lastItem.indent === item.indent && this.lastItem.isOrdered !== item.isOrdered) {
-			return false;
+		// When the indentation is the same as the last item
+		if (this.lastItem.indent === item.indent) {
+			// Whether the list type (bullet/ordered) is also the same 
+			return (this.lastItem.isOrdered !== item.isOrdered);
 		}
 
+		// When no children appended yet
 		if (this.indentUnit === -1) {
 			return true;
 		}
 
+		// Get the difference of the indentation level
 		const subIndent = item.indent - this.lastItem.indent;
-		return (subIndent % this.indentUnit === 0);
+
+		if (subIndent > 0) {
+			// Only one level can be indented
+			return (subIndent === this.indentUnit);
+		} else {
+			// Multiple levels can be dedented
+			return (Math.abs(subIndent) % this.indentUnit === 0);
+		}
 	}
 
 	render(options, callback) {
