@@ -1,8 +1,12 @@
 {
   "name": "koto-parser",
   "version": "0.1.0",
-  "description": "",
+  "description": "KotoParser: Easily-extensible asyncronous Markdown parser",
   "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "dependencies": {
     "async": "^2.1.4",
     "lodash": "^4.17.4"
@@ -18,6 +22,14 @@
     "test": "mocha",
     "build": "node build.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hatamake/KotoParser.git"
+  },
   "author": "cumul <gg6123@naver.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hatamake/KotoParser/issues"
+  },
+  "homepage": "https://github.com/hatamake/KotoParser#readme"
 }
