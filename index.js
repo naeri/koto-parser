@@ -8,7 +8,7 @@ function requireAll(dirname) {
 
 	const result = [];
 
-	fs.readdirSync(dirname).forEach(function(filename) {
+	fs.readdirSync(dirpath).forEach(function(filename) {
 		const filepath = path.join(dirpath, filename);
 		const _module = require(filepath);
 
