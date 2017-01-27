@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const async = require('async');
 const {CharScanner} = require('./CharScanner.js');
-const {matchType} = require('./shorthands.js');
+const {matchType} = require('../utils/shorthands.js');
 
 class BlockScanner extends CharScanner {
 	constructor(buffer, options) {
