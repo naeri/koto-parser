@@ -150,7 +150,7 @@ var CodeBlock = function (_Block) {
 			scanner.skip(+3);
 			scanner.skipLineSpaces();
 
-			var data = { language: null, content: null };
+			var data = { language: 'text', content: null };
 
 			// 언어 설정
 			if (!scanner.isAtLineEnd) {
@@ -479,7 +479,7 @@ var ListBlock = function (_Block) {
 			// When the indentation is the same as the last item
 			if (this.lastItem.indent === item.indent) {
 				// Whether the list type (bullet/ordered) is also the same 
-				return this.lastItem.isOrdered !== item.isOrdered;
+				return this.lastItem.isOrdered === item.isOrdered;
 			}
 
 			// When no children appended yet
@@ -774,8 +774,9 @@ var BlockScanner = function (_CharScanner) {
 				var match = matchType(this.options.blockTypes, this);
 
 				var block = match.type.parse(this, match.data);
-				this.skipLineEnds();
 				this.popAll();
+
+				this.skipLineEnds();
 
 				this.blocks.push(block);
 			}
@@ -1118,11 +1119,13 @@ var CodeToken = function (_Token) {
 	_createClass(CodeToken, [{
 		key: 'render',
 		value: function render(options, callback) {
-			callback(null, '<code>' + this.content + '</code>');
+			callback(null, '<pre><code>' + this.content + '</code></pre>');
 		}
 	}], [{
 		key: 'match',
 		value: function match(scanner) {
+			scanner.mark();
+
 			if (!scanner.ahead('`')) {
 				return null;
 			}
@@ -1131,6 +1134,8 @@ var CodeToken = function (_Token) {
 			scanner.mark();
 
 			if (!scanner.find('`')) {
+				scanner.popAndBack();
+				scanner.popAndBack();
 				return null;
 			}
 
@@ -1182,14 +1187,14 @@ var BoldToken = function (_Token) {
 	}], [{
 		key: 'match',
 		value: function match(scanner) {
-			scanner.mark();
+			scanner.mark(); // [start]
 
 			if (!scanner.ahead('**')) {
 				return null;
 			}
 
 			scanner.skip(+2);
-			scanner.mark();
+			scanner.mark(); // [start, contentStart]
 
 			if (!scanner.find('**')) {
 				scanner.popAndBack();
@@ -1197,7 +1202,10 @@ var BoldToken = function (_Token) {
 				return null;
 			}
 
-			return scanner.pop();
+			var content = scanner.pop();
+			scanner.skip(+1);
+
+			return content;
 		}
 	}, {
 		key: 'parse',
@@ -1229,6 +1237,8 @@ var ItalicToken = function (_Token2) {
 	}], [{
 		key: 'match',
 		value: function match(scanner) {
+			scanner.mark();
+
 			if (!scanner.ahead('*')) {
 				return null;
 			}
@@ -1237,6 +1247,8 @@ var ItalicToken = function (_Token2) {
 			scanner.mark();
 
 			if (!scanner.find('*')) {
+				scanner.popAndBack();
+				scanner.popAndBack();
 				return null;
 			}
 
@@ -1290,31 +1302,40 @@ var ImageToken = function (_Token) {
 	}], [{
 		key: 'match',
 		value: function match(scanner) {
+			scanner.mark(); // [start]
+
 			if (!scanner.ahead('!')) {
 				return null;
 			}
 
+			scanner.skip(+1);
+
 			if (!scanner.ahead('[')) {
+				scanner.popAndBack();
 				return null;
 			}
 
 			scanner.skip(+1);
-			scanner.mark();
+			scanner.mark(); // [start, titleStart]
 
 			if (!scanner.find(']')) {
+				scanner.popAndBack();
+				scanner.popAndBack();
 				return null;
 			}
 
-			var title = scanner.pop();
+			var title = scanner.pop(); // [start]
 
 			if (!scanner.find('(')) {
 				return null;
 			}
 
 			scanner.skip(+1);
-			scanner.mark();
+			scanner.mark(); // [start, srcStart]
 
 			if (!scanner.find(')')) {
+				scanner.popAndBack();
+				scanner.popAndBack();
 				return null;
 			}
 
@@ -1337,9 +1358,9 @@ exports.ImageToken = ImageToken;
 },{"./token.js":20}],17:[function(require,module,exports){
 'use strict';
 
-module.exports = [require('./code.js').CodeToken, require('./emphasis.js').BoldToken, require('./emphasis.js').ItalicToken, require('./image.js').ImageToken, require('./link.js').LinkToken, require('./strike').StrikeToken];
+module.exports = [require('./code.js').CodeToken, require('./emphasis.js').BoldToken, require('./emphasis.js').ItalicToken, require('./image.js').ImageToken, require('./link.js').LinkToken, require('./strike.js').StrikeToken];
 
-},{"./code.js":14,"./emphasis.js":15,"./image.js":16,"./link.js":18,"./strike":19}],18:[function(require,module,exports){
+},{"./code.js":14,"./emphasis.js":15,"./image.js":16,"./link.js":18,"./strike.js":19}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1374,27 +1395,34 @@ var LinkToken = function (_Token) {
 	}], [{
 		key: 'match',
 		value: function match(scanner) {
+			scanner.mark(); // [start]
+
 			if (!scanner.ahead('[')) {
 				return null;
 			}
 
 			scanner.skip(+1);
-			scanner.mark();
+			scanner.mark(); // [start, titleStart]
 
 			if (!scanner.find(']')) {
+				scanner.popAndBack();
+				scanner.popAndBack();
 				return null;
 			}
 
-			var title = scanner.pop();
+			var title = scanner.pop(); // [start]
 
 			if (!scanner.find('(')) {
+				scanner.popAndBack();
 				return null;
 			}
 
 			scanner.skip(+1);
-			scanner.mark();
+			scanner.mark(); // [start, hrefStart]
 
 			if (!scanner.find(')')) {
+				scanner.popAndBack();
+				scanner.popAndBack();
 				return null;
 			}
 
@@ -1448,18 +1476,25 @@ var StrikeToken = function (_Token) {
 	}], [{
 		key: 'match',
 		value: function match(scanner) {
+			scanner.mark(); // [start]
+
 			if (!scanner.ahead('~~')) {
 				return null;
 			}
 
 			scanner.skip(+2);
-			scanner.mark();
+			scanner.mark(); // [start, contentStart]
 
 			if (!scanner.find('~~')) {
+				scanner.popAndBack();
+				scanner.popAndBack();
 				return null;
 			}
 
-			return scanner.pop();
+			var content = scanner.pop();
+			scanner.skip(+1);
+
+			return content;
 		}
 	}, {
 		key: 'parse',
