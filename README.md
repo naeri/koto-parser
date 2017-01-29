@@ -1,7 +1,8 @@
 # KotoParser
 
-*KotoParser* is an easily-extensible asyncronous Markdown parser.
-[Live Demo](https://hatamake.github.io/koto-parser/demo/).
+[![npm version](https://badge.fury.io/js/koto-parser.svg)](https://badge.fury.io/js/koto-parser)
+
+*KotoParser* is an easily-extensible asyncronous Markdown parser. [Live Demo](https://hatamake.github.io/koto-parser/demo/).
 
 ## Install
 
@@ -38,8 +39,8 @@ KotoParser.render('I am using **markdown**', function(error, result) {
 ----------------------|-------------
  text                 |
  [options]            |
- [options.blockTypes] | An *array* of [block-type plugins](/docs/plugin.md#)
- [options.tokenTypes] | An *array* of [token-type plugins](/docs/plugin.md#)
+ [options.blockTypes] | An *array* of [block-type plugins](/doc/plugin.md#)
+ [options.tokenTypes] | An *array* of [token-type plugins](/doc/plugin.md#)
  callback             | A callback function that two arguements: `error` and `result`
 
 ### Plugin Development Guide

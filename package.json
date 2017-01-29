@@ -1,6 +1,6 @@
 {
   "name": "koto-parser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "KotoParser: Easily-extensible asyncronous Markdown parser",
   "main": "lib/index.js",
   "directories": {
