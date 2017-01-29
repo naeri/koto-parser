@@ -1,6 +1,6 @@
 # KotoParser
 
-[![npm version](https://badge.fury.io/js/koto-parser.svg)](https://badge.fury.io/js/koto-parser)
+[![npm version](https://badge.fury.io/js/koto-parser.png)](https://badge.fury.io/js/koto-parser)
 
 *KotoParser* is an easily-extensible asyncronous Markdown parser. [Live Demo](https://hatamake.github.io/koto-parser/demo/).
 
