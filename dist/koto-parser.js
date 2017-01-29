@@ -1119,7 +1119,7 @@ var CodeToken = function (_Token) {
 	_createClass(CodeToken, [{
 		key: 'render',
 		value: function render(options, callback) {
-			callback(null, '<pre><code>' + this.content + '</code></pre>');
+			callback(null, '<code>' + this.content + '</code>');
 		}
 	}], [{
 		key: 'match',

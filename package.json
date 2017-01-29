@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
+    "doc": "doc",
     "test": "test"
   },
   "dependencies": {
