@@ -109,6 +109,6 @@ describe('Tokens', function() {
 		renderAndTest('`Code`', {
 			blockTypes: [require('../lib/blocks/paragraph.js').ParagraphBlock],
 			tokenTypes: [require('../lib/tokens/code.js').CodeToken]
-		}, '<p><pre><code>Code</code></pre></p>', done);
+		}, '<p><code>Code</code></p>', done);
 	});
 });

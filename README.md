@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/koto-parser.png)](https://badge.fury.io/js/koto-parser)
 
-*KotoParser* is an easily-extensible asyncronous Markdown parser. [Live Demo](https://hatamake.github.io/koto-parser/demo/).
+*KotoParser* is an easily-extensible asynchronous Markdown parser.
+[Live Demo](https://hatamake.github.io/koto-parser/demo/).
 
 ## Install
 
@@ -35,13 +36,14 @@ KotoParser.render('I am using **markdown**', function(error, result) {
 
 ### KotoParser.render(text[, options], callback);
 
- Argument             | Description
-----------------------|-------------
- text                 |
- [options]            |
- [options.blockTypes] | An *array* of [block-type plugins](/doc/plugin.md#)
- [options.tokenTypes] | An *array* of [token-type plugins](/doc/plugin.md#)
- callback             | A callback function that two arguements: `error` and `result`
+ Argument              | Default | Description
+-----------------------|---------|-------------
+ text                  |         | 
+ [options]             |         | 
+ [options.blockTypes]  |         | An *array* of [block-type plugins](/docs/plugin.md#)
+ [options.tokenTypes]  |         | An *array* of [token-type plugins](/docs/plugin.md#)
+ [options.sanitize]    | `true`  | An option passed to [`sanitize-html`](https://github.com/punkave/sanitize-html), or just `true` for default options. To turn off the sanitization, set to `false`.
+ callback              |         | A callback function that takes two arguments: `error` and `result`
 
 ### Plugin Development Guide
 
