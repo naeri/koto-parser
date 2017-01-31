@@ -42,7 +42,7 @@ KotoParser.render('I am using **markdown**', function(error, result) {
  [options]             |                                   | 
  [options.blockTypes]  |                                   | An *array* of [block-type plugins](/docs/plugin.md#)
  [options.tokenTypes]  |                                   | An *array* of [token-type plugins](/docs/plugin.md#)
- [options.sanitize]    | See [index.js](/lib/index.js#L19) | An option passed to [`sanitize-html`](https://github.com/punkave/sanitize-html). To turn off the sanitization, set to `false`.
+ [options.sanitize]    | See [index.js](/lib/index.js#L19) | An option passed to [escape-html-whitelist](https://github.com/hatamake/escape-html). To turn off the sanitization, set to `false`.
  callback              |                                   | A callback function that takes two arguments: `error` and `result`
 
 ### Plugin Development Guide
