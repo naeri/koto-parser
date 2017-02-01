@@ -83,95 +83,65 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 var _ = __webpack_require__(1);
 var async = __webpack_require__(5);
+var Scanner = __webpack_require__(4);
+var matchType = __webpack_require__(12);
 
-var _require = __webpack_require__(4),
-    CharScanner = _require.CharScanner;
+var _require = __webpack_require__(26),
+    TextToken = _require.TextToken;
 
-var _require2 = __webpack_require__(11),
-    matchType = _require2.matchType;
+function parse(buffer, options) {
+	var scanner = new Scanner(buffer);
+	var tokens = [];
 
-var _require3 = __webpack_require__(26),
-    TextToken = _require3.TextToken;
+	while (!scanner.isAtEnd) {
+		var match = matchType(scanner, options.tokenTypes);
 
-var InlineScanner = function (_CharScanner) {
-	_inherits(InlineScanner, _CharScanner);
+		if (match) {
+			var token = match.type.parse(scanner, match.data, options);
+			scanner.popAll();
 
-	function InlineScanner(buffer, options) {
-		_classCallCheck(this, InlineScanner);
+			tokens.push(token);
+		} else {
+			var lastToken = _.last(scanner.tokens);
 
-		var _this = _possibleConstructorReturn(this, (InlineScanner.__proto__ || Object.getPrototypeOf(InlineScanner)).call(this, buffer));
+			if (_.isArray(lastToken)) {
+				lastToken.push(scanner.currentChar);
+			} else {
+				tokens.push([scanner.currentChar]);
+			}
+		}
 
-		_this.options = options;
-		_this.tokens = [];
-		return _this;
+		scanner.skip(+1);
 	}
 
-	_createClass(InlineScanner, [{
-		key: 'parse',
-		value: function parse() {
-			while (!this.isAtEnd) {
-				var match = matchType(this, this.options.tokenTypes);
+	return tokens;
+}
 
-				if (match) {
-					var token = match.type.parse(this, match.data);
-					this.popAll();
-
-					this.tokens.push(token);
-				} else {
-					var lastToken = _.last(this.tokens);
-
-					if (_.isArray(lastToken)) {
-						lastToken.push(this.currentChar);
-					} else {
-						this.tokens.push([this.currentChar]);
-					}
-				}
-
-				this.skip(+1);
-			}
-
-			return this;
+function render(tokens, options, callback) {
+	async.map(tokens, function (token, callback) {
+		if (_.isArray(token)) {
+			token = new TextToken(token.join(''));
 		}
-	}, {
-		key: 'render',
-		value: function render(callback) {
-			var _this2 = this;
 
-			async.map(this.tokens, function (token, callback) {
-				if (_.isArray(token)) {
-					token = new TextToken(token.join(''));
-				}
-
-				token.render(_this2.options, callback);
-			}, function (error, tokens) {
-				if (error) {
-					callback(error, null);
-				} else {
-					callback(null, tokens.join(''));
-				}
-			});
+		token.render(options, callback);
+	}, function (error, renderedTokens) {
+		if (error) {
+			callback(error, null);
+		} else {
+			callback(null, renderedTokens.join(''));
 		}
-	}], [{
-		key: 'parseAndRender',
-		value: function parseAndRender(buffer, options, callback) {
-			new InlineScanner(buffer, options).parse().render(callback);
-		}
-	}]);
+	});
+}
 
-	return InlineScanner;
-}(CharScanner);
+function parseAndRender(buffer, options, callback) {
+	render(parse(buffer, options), options, callback);
+}
 
-exports.InlineScanner = InlineScanner;
+exports.parse = parse;
+exports.render = render;
+exports.parseAndRender = parseAndRender;
 
 /***/ }),
 /* 1 */
@@ -9637,12 +9607,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Block = function () {
-	function Block() {
-		_classCallCheck(this, Block);
+var BaseBlock = function () {
+	function BaseBlock() {
+		_classCallCheck(this, BaseBlock);
 	}
 
-	_createClass(Block, [{
+	_createClass(BaseBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
 			callback(null, '');
@@ -9654,8 +9624,8 @@ var Block = function () {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new Block();
+		value: function parse(scanner, match, options) {
+			return new BaseBlock();
 		}
 	}, {
 		key: 'integrate',
@@ -9664,10 +9634,10 @@ var Block = function () {
 		}
 	}]);
 
-	return Block;
+	return BaseBlock;
 }();
 
-exports.Block = Block;
+exports.BaseBlock = BaseBlock;
 
 /***/ }),
 /* 3 */
@@ -9680,12 +9650,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Token = function () {
-	function Token() {
-		_classCallCheck(this, Token);
+var BaseToken = function () {
+	function BaseToken() {
+		_classCallCheck(this, BaseToken);
 	}
 
-	_createClass(Token, [{
+	_createClass(BaseToken, [{
 		key: 'render',
 		value: function render(options, callback) {
 			callback(null, '');
@@ -9698,14 +9668,14 @@ var Token = function () {
 	}, {
 		key: 'parse',
 		value: function parse(scanner, data) {
-			return new Token();
+			return new BaseToken();
 		}
 	}]);
 
-	return Token;
+	return BaseToken;
 }();
 
-exports.Token = Token;
+exports.BaseToken = BaseToken;
 
 /***/ }),
 /* 4 */
@@ -9720,9 +9690,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var positionError = new Error('Position out of range.');
 
-var CharScanner = function () {
-	function CharScanner(buffer) {
-		_classCallCheck(this, CharScanner);
+var Scanner = function () {
+	function Scanner(buffer) {
+		_classCallCheck(this, Scanner);
 
 		this.buffer = buffer.replace(/\r\n?/g, '\n');
 
@@ -9730,7 +9700,7 @@ var CharScanner = function () {
 		this.markers = [];
 	}
 
-	_createClass(CharScanner, [{
+	_createClass(Scanner, [{
 		key: 'getCharAt',
 		value: function getCharAt(position) {
 			if (position === this.length) {
@@ -9797,7 +9767,7 @@ var CharScanner = function () {
 	}, {
 		key: 'skipLineSpaces',
 		value: function skipLineSpaces() {
-			while (CharScanner.isLineSpace(this.currentChar)) {
+			while (Scanner.isLineSpace(this.currentChar)) {
 				this.skip(+1);
 			}
 		}
@@ -9850,7 +9820,7 @@ var CharScanner = function () {
 	}, {
 		key: 'isAtLineEnd',
 		get: function get() {
-			return CharScanner.isLineEnd(this.currentChar);
+			return Scanner.isLineEnd(this.currentChar);
 		}
 	}], [{
 		key: 'isLineSpace',
@@ -9864,10 +9834,10 @@ var CharScanner = function () {
 		}
 	}]);
 
-	return CharScanner;
+	return Scanner;
 }();
 
-exports.CharScanner = CharScanner;
+module.exports = Scanner;
 
 /***/ }),
 /* 5 */
@@ -15233,8 +15203,6 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 var _ = __webpack_require__(1);
 var url = __webpack_require__(33);
 
-var htmlTagRegExp = /<\s*(\/?)\s*([a-z][a-z0-9]*)\b([^>]*)>/gi;
-
 var defaultOptions = {
     allowedTags: ['br', 'hr', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre', 'code', 'ul', 'ol', 'nl', 'li', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'b', 'strong', 'i', 'em', 'strike', 'a'],
     allowedAttrs: {
@@ -15245,6 +15213,8 @@ var defaultOptions = {
     },
     allowNullProtocol: true
 };
+
+var htmlTagRegExp = /<\s*(\/?)\s*([a-z][a-z0-9]*)\b([^>]*)>/gi;
 
 function escapeHtml(text, options) {
     options = _.extend(defaultOptions, options);
@@ -15353,21 +15323,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var async = __webpack_require__(5);
 
 var _require = __webpack_require__(2),
-    Block = _require.Block;
+    BaseBlock = _require.BaseBlock;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
 function _integrate(results, prev, curr) {
 	if (prev instanceof DefinitionBlock) {
-		prev.add(curr);
+		prev.append(curr);
 	} else {
 		results.push(new DefinitionBlock(curr));
 	}
 }
 
-var DefinitionBlock = function (_Block) {
-	_inherits(DefinitionBlock, _Block);
+var DefinitionBlock = function (_BaseBlock) {
+	_inherits(DefinitionBlock, _BaseBlock);
 
 	function DefinitionBlock(firstItem) {
 		_classCallCheck(this, DefinitionBlock);
@@ -15379,8 +15348,8 @@ var DefinitionBlock = function (_Block) {
 	}
 
 	_createClass(DefinitionBlock, [{
-		key: 'add',
-		value: function add(item) {
+		key: 'append',
+		value: function append(item) {
 			this.items.push(item);
 		}
 	}, {
@@ -15399,24 +15368,24 @@ var DefinitionBlock = function (_Block) {
 	}]);
 
 	return DefinitionBlock;
-}(Block);
+}(BaseBlock);
 
-var TermBlock = function (_Block2) {
-	_inherits(TermBlock, _Block2);
+var TermBlock = function (_BaseBlock2) {
+	_inherits(TermBlock, _BaseBlock2);
 
-	function TermBlock(content) {
+	function TermBlock(contentTokens) {
 		_classCallCheck(this, TermBlock);
 
 		var _this2 = _possibleConstructorReturn(this, (TermBlock.__proto__ || Object.getPrototypeOf(TermBlock)).call(this));
 
-		_this2.content = content;
+		_this2.contentTokens = contentTokens;
 		return _this2;
 	}
 
 	_createClass(TermBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -15431,13 +15400,15 @@ var TermBlock = function (_Block2) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
+		value: function parse(scanner, match, options) {
 			scanner.skip(2);
 
 			scanner.mark();
 			scanner.find(': ');
+			var content = scanner.pop();
+			var contentTokens = Inline.parse(content, options);
 
-			return new TermBlock(scanner.pop());
+			return new TermBlock(contentTokens);
 		}
 	}, {
 		key: 'integrate',
@@ -15447,24 +15418,24 @@ var TermBlock = function (_Block2) {
 	}]);
 
 	return TermBlock;
-}(Block);
+}(BaseBlock);
 
-var DescriptionBlock = function (_Block3) {
-	_inherits(DescriptionBlock, _Block3);
+var DescriptionBlock = function (_BaseBlock3) {
+	_inherits(DescriptionBlock, _BaseBlock3);
 
-	function DescriptionBlock(content) {
+	function DescriptionBlock(contentTokens) {
 		_classCallCheck(this, DescriptionBlock);
 
 		var _this3 = _possibleConstructorReturn(this, (DescriptionBlock.__proto__ || Object.getPrototypeOf(DescriptionBlock)).call(this));
 
-		_this3.content = content;
+		_this3.contentTokens = contentTokens;
 		return _this3;
 	}
 
 	_createClass(DescriptionBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -15479,13 +15450,15 @@ var DescriptionBlock = function (_Block3) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
+		value: function parse(scanner, match, options) {
 			scanner.skip(2);
 
 			scanner.mark();
 			scanner.skipToLineEnd();
+			var content = scanner.pop();
+			var contentTokens = Inline.parse(content, options);
 
-			return new DescriptionBlock(scanner.pop());
+			return new DescriptionBlock(contentTokens);
 		}
 	}, {
 		key: 'integrate',
@@ -15495,37 +15468,13 @@ var DescriptionBlock = function (_Block3) {
 	}]);
 
 	return DescriptionBlock;
-}(Block);
+}(BaseBlock);
 
 exports.TermBlock = TermBlock;
 exports.DescriptionBlock = DescriptionBlock;
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function matchType(scanner, types) {
-	for (var i = 0; i < types.length; i++) {
-		var type = types[i];
-
-		var result = type.match(scanner);
-		scanner.popAll();
-
-		if (result === null || result === false || result === undefined) {
-			continue;
-		}
-
-		return { type: type, data: result };
-	}
-}
-
-exports.matchType = matchType;
-
-/***/ }),
-/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15540,27 +15489,26 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(3),
-    Token = _require.Token;
+    BaseToken = _require.BaseToken;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
-var BoldToken = function (_Token) {
-	_inherits(BoldToken, _Token);
+var BoldToken = function (_BaseToken) {
+	_inherits(BoldToken, _BaseToken);
 
-	function BoldToken(content) {
+	function BoldToken(contentTokens) {
 		_classCallCheck(this, BoldToken);
 
 		var _this = _possibleConstructorReturn(this, (BoldToken.__proto__ || Object.getPrototypeOf(BoldToken)).call(this));
 
-		_this.content = content;
+		_this.contentTokens = contentTokens;
 		return _this;
 	}
 
 	_createClass(BoldToken, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -15593,30 +15541,31 @@ var BoldToken = function (_Token) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new BoldToken(data);
+		value: function parse(scanner, match, options) {
+			var contentTokens = Inline.parse(match, options);
+			return new BoldToken(contentTokens);
 		}
 	}]);
 
 	return BoldToken;
-}(Token);
+}(BaseToken);
 
-var ItalicToken = function (_Token2) {
-	_inherits(ItalicToken, _Token2);
+var ItalicToken = function (_BaseToken2) {
+	_inherits(ItalicToken, _BaseToken2);
 
-	function ItalicToken(content) {
+	function ItalicToken(contentTokens) {
 		_classCallCheck(this, ItalicToken);
 
 		var _this2 = _possibleConstructorReturn(this, (ItalicToken.__proto__ || Object.getPrototypeOf(ItalicToken)).call(this));
 
-		_this2.content = content;
+		_this2.contentTokens = contentTokens;
 		return _this2;
 	}
 
 	_createClass(ItalicToken, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -15646,16 +15595,41 @@ var ItalicToken = function (_Token2) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new ItalicToken(data);
+		value: function parse(scanner, match, options) {
+			var contentTokens = Inline.parse(match, options);
+			return new ItalicToken(contentTokens);
 		}
 	}]);
 
 	return ItalicToken;
-}(Token);
+}(BaseToken);
 
 exports.BoldToken = BoldToken;
 exports.ItalicToken = ItalicToken;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function matchType(scanner, types) {
+	for (var i = 0; i < types.length; i++) {
+		var type = types[i];
+
+		var result = type.match(scanner);
+		scanner.popAll();
+
+		if (result === null || result === false || result === undefined) {
+			continue;
+		}
+
+		return { type: type, data: result };
+	}
+}
+
+module.exports = matchType;
 
 /***/ }),
 /* 13 */
@@ -15860,99 +15834,66 @@ module.exports = [__webpack_require__(17).BlockquoteBlock, __webpack_require__(1
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 var _ = __webpack_require__(1);
 var async = __webpack_require__(5);
+var Scanner = __webpack_require__(4);
+var matchType = __webpack_require__(12);
 
-var _require = __webpack_require__(4),
-    CharScanner = _require.CharScanner;
+var _require = __webpack_require__(21),
+    ParagraphBlock = _require.ParagraphBlock;
 
-var _require2 = __webpack_require__(11),
-    matchType = _require2.matchType;
+function parse(buffer, options) {
+	var scanner = new Scanner(buffer);
+	var blocks = [];
 
-var _require3 = __webpack_require__(21),
-    ParagraphBlock = _require3.ParagraphBlock;
+	while (!scanner.isAtEnd) {
+		var match = matchType(scanner, options.blockTypes);
+		var block = void 0;
 
-var BlockScanner = function (_CharScanner) {
-	_inherits(BlockScanner, _CharScanner);
+		if (match) {
+			block = match.type.parse(scanner, match.data, options);
+		} else {
+			block = ParagraphBlock.parse(scanner, null, options);
+		}
 
-	function BlockScanner(buffer, options) {
-		_classCallCheck(this, BlockScanner);
+		scanner.popAll();
+		scanner.skipLineEnds();
 
-		var _this = _possibleConstructorReturn(this, (BlockScanner.__proto__ || Object.getPrototypeOf(BlockScanner)).call(this, buffer));
-
-		_this.options = options;
-		_this.blocks = [];
-		return _this;
+		blocks.push(block);
 	}
 
-	_createClass(BlockScanner, [{
-		key: 'parse',
-		value: function parse() {
-			while (!this.isAtEnd) {
-				var match = matchType(this, this.options.blockTypes);
-				var block = void 0;
+	return integrate(blocks);
+}
 
-				if (match) {
-					block = match.type.parse(this, match.data);
-				} else {
-					block = ParagraphBlock.parse(this);
-				}
+function integrate(blocks) {
+	var result = [];
 
-				this.popAll();
-				this.skipLineEnds();
+	blocks.forEach(function (curr, index) {
+		curr.constructor.integrate(result, _.last(result), curr);
+	});
 
-				this.blocks.push(block);
-			}
+	return result;
+}
 
-			this._integrate();
-
-			return this;
+function render(blocks, options, callback) {
+	async.map(blocks, function (block, callback) {
+		block.render(options, callback);
+	}, function (error, renderedBlocks) {
+		if (error) {
+			callback(error, null);
+		} else {
+			callback(null, renderedBlocks.join(''));
 		}
-	}, {
-		key: '_integrate',
-		value: function _integrate() {
-			var results = [];
+	});
+}
 
-			this.blocks.forEach(function (curr, index) {
-				curr.constructor.integrate(results, _.last(results), curr);
-			});
+function parseAndRender(buffer, options, callback) {
+	render(parse(buffer, options), options, callback);
+}
 
-			this.blocks = results;
-		}
-	}, {
-		key: 'render',
-		value: function render(callback) {
-			var _this2 = this;
-
-			async.map(this.blocks, function (block, callback) {
-				block.render(_this2.options, callback);
-			}, function (error, blocks) {
-				if (error) {
-					callback(error, null);
-				} else {
-					callback(null, blocks.join(''));
-				}
-			});
-		}
-	}], [{
-		key: 'parseAndRender',
-		value: function parseAndRender(buffer, options, callback) {
-			new BlockScanner(buffer, options).parse().render(callback);
-		}
-	}]);
-
-	return BlockScanner;
-}(CharScanner);
-
-exports.BlockScanner = BlockScanner;
+exports.parse = parse;
+exports.render = render;
+exports.parseAndRender = parseAndRender;
 
 /***/ }),
 /* 16 */
@@ -15961,7 +15902,7 @@ exports.BlockScanner = BlockScanner;
 "use strict";
 
 
-module.exports = [__webpack_require__(22).CodeToken, __webpack_require__(12).BoldToken, __webpack_require__(12).ItalicToken, __webpack_require__(23).ImageToken, __webpack_require__(24).LinkToken, __webpack_require__(25).StrikeToken];
+module.exports = [__webpack_require__(22).CodeToken, __webpack_require__(11).BoldToken, __webpack_require__(11).ItalicToken, __webpack_require__(23).ImageToken, __webpack_require__(24).LinkToken, __webpack_require__(25).StrikeToken];
 
 /***/ }),
 /* 17 */
@@ -15979,27 +15920,26 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(2),
-    Block = _require.Block;
+    BaseBlock = _require.BaseBlock;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
-var BlockquoteBlock = function (_Block) {
-	_inherits(BlockquoteBlock, _Block);
+var BlockquoteBlock = function (_BaseBlock) {
+	_inherits(BlockquoteBlock, _BaseBlock);
 
-	function BlockquoteBlock(content) {
+	function BlockquoteBlock(contentTokens) {
 		_classCallCheck(this, BlockquoteBlock);
 
 		var _this = _possibleConstructorReturn(this, (BlockquoteBlock.__proto__ || Object.getPrototypeOf(BlockquoteBlock)).call(this));
 
-		_this.content = content;
+		_this.contentTokens = contentTokens;
 		return _this;
 	}
 
 	_createClass(BlockquoteBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -16014,19 +15954,20 @@ var BlockquoteBlock = function (_Block) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
+		value: function parse(scanner, match, options) {
 			scanner.skip(+2);
 			scanner.mark();
 
 			scanner.skipToLineEnd();
 			var content = scanner.pop();
+			var contentTokens = Inline.parse(content, options);
 
-			return new BlockquoteBlock(content);
+			return new BlockquoteBlock(contentTokens);
 		}
 	}]);
 
 	return BlockquoteBlock;
-}(Block);
+}(BaseBlock);
 
 exports.BlockquoteBlock = BlockquoteBlock;
 
@@ -16048,13 +15989,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _ = __webpack_require__(1);
 
 var _require = __webpack_require__(2),
-    Block = _require.Block;
+    BaseBlock = _require.BaseBlock;
 
 var _require2 = __webpack_require__(4),
-    CharScanner = _require2.CharScanner;
+    isLineEnd = _require2.isLineEnd;
 
-var CodeBlock = function (_Block) {
-	_inherits(CodeBlock, _Block);
+var CodeBlock = function (_BaseBlock) {
+	_inherits(CodeBlock, _BaseBlock);
 
 	function CodeBlock(language, content) {
 		_classCallCheck(this, CodeBlock);
@@ -16104,7 +16045,7 @@ var CodeBlock = function (_Block) {
 
 			// 닫는 태그의 유효성 확인
 			while (scanner.find('\n```')) {
-				if (!CharScanner.isLineEnd(scanner.getCharAtOffset(+4))) {
+				if (!isLineEnd(scanner.getCharAtOffset(+4))) {
 					scanner.skip(+4);
 					continue;
 				}
@@ -16121,13 +16062,13 @@ var CodeBlock = function (_Block) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new CodeBlock(data.language, data.content);
+		value: function parse(scanner, match, options) {
+			return new CodeBlock(match.language, match.content);
 		}
 	}]);
 
 	return CodeBlock;
-}(Block);
+}(BaseBlock);
 
 exports.CodeBlock = CodeBlock;
 
@@ -16147,34 +16088,31 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(2),
-    Block = _require.Block;
+    BaseBlock = _require.BaseBlock;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
-var HeadingBlock = function (_Block) {
-	_inherits(HeadingBlock, _Block);
+var HeadingBlock = function (_BaseBlock) {
+	_inherits(HeadingBlock, _BaseBlock);
 
-	function HeadingBlock(level, content) {
+	function HeadingBlock(level, contentTokens) {
 		_classCallCheck(this, HeadingBlock);
 
 		var _this = _possibleConstructorReturn(this, (HeadingBlock.__proto__ || Object.getPrototypeOf(HeadingBlock)).call(this));
 
 		_this.level = level;
-		_this.content = content;
+		_this.contentTokens = contentTokens;
 		return _this;
 	}
 
 	_createClass(HeadingBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
-			var _this2 = this;
-
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
-					callback(null, '<h' + _this2.level + '>' + content + '</h' + _this2.level + '>');
+					callback(null, '<h' + this.level + '>' + content + '</h' + this.level + '>');
 				}
 			});
 		}
@@ -16185,7 +16123,7 @@ var HeadingBlock = function (_Block) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
+		value: function parse(scanner, match, options) {
 			var level = 0;
 
 			while (scanner.currentChar === '#') {
@@ -16202,13 +16140,14 @@ var HeadingBlock = function (_Block) {
 
 			scanner.skipToLineEnd();
 			var content = scanner.pop();
+			var contentTokens = Inline.parse(content, options);
 
-			return new HeadingBlock(level, content);
+			return new HeadingBlock(level, contentTokens);
 		}
 	}]);
 
 	return HeadingBlock;
-}(Block);
+}(BaseBlock);
 
 exports.HeadingBlock = HeadingBlock;
 
@@ -16231,13 +16170,12 @@ var _ = __webpack_require__(1);
 var async = __webpack_require__(5);
 
 var _require = __webpack_require__(2),
-    Block = _require.Block;
+    BaseBlock = _require.BaseBlock;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
-var ListBlock = function (_Block) {
-	_inherits(ListBlock, _Block);
+var ListBlock = function (_BaseBlock) {
+	_inherits(ListBlock, _BaseBlock);
 
 	function ListBlock(items, indentUnit) {
 		_classCallCheck(this, ListBlock);
@@ -16341,26 +16279,26 @@ var ListBlock = function (_Block) {
 	}]);
 
 	return ListBlock;
-}(Block);
+}(BaseBlock);
 
-var ListItemBlock = function (_Block2) {
-	_inherits(ListItemBlock, _Block2);
+var ListItemBlock = function (_Block) {
+	_inherits(ListItemBlock, _Block);
 
-	function ListItemBlock(isOrdered, indent, content) {
+	function ListItemBlock(isOrdered, indent, contentTokens) {
 		_classCallCheck(this, ListItemBlock);
 
 		var _this3 = _possibleConstructorReturn(this, (ListItemBlock.__proto__ || Object.getPrototypeOf(ListItemBlock)).call(this));
 
 		_this3.isOrdered = isOrdered;
 		_this3.indent = indent;
-		_this3.content = content;
+		_this3.contentTokens = contentTokens;
 		return _this3;
 	}
 
 	_createClass(ListItemBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -16420,8 +16358,13 @@ var ListItemBlock = function (_Block2) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new ListItemBlock(data.isOrdered, data.indent, data.content);
+		value: function parse(scanner, match, options) {
+			var isOrdered = match.isOrdered,
+			    indent = match.indent;
+
+			var contentTokens = Inline.parse(match.content, options);
+
+			return new ListItemBlock(isOrdered, indent, contentTokens);
 		}
 	}, {
 		key: 'integrate',
@@ -16455,23 +16398,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(2),
-    Block = _require.Block;
+    BaseBlock = _require.BaseBlock;
 
 var _require2 = __webpack_require__(4),
-    CharScanner = _require2.CharScanner;
+    isLineEnd = _require2.isLineEnd;
 
-var _require3 = __webpack_require__(0),
-    InlineScanner = _require3.InlineScanner;
+var Inline = __webpack_require__(0);
 
 var ParagraphBlock = function (_Block) {
 	_inherits(ParagraphBlock, _Block);
 
-	function ParagraphBlock(content, isLastContent) {
+	function ParagraphBlock(contentTokens, isLastContent) {
 		_classCallCheck(this, ParagraphBlock);
 
 		var _this = _possibleConstructorReturn(this, (ParagraphBlock.__proto__ || Object.getPrototypeOf(ParagraphBlock)).call(this));
 
-		_this.content = content;
+		_this.contentTokens = contentTokens;
 		_this.isLastContent = isLastContent;
 		return _this;
 	}
@@ -16479,7 +16421,7 @@ var ParagraphBlock = function (_Block) {
 	_createClass(ParagraphBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -16489,20 +16431,21 @@ var ParagraphBlock = function (_Block) {
 		}
 	}], [{
 		key: 'parse',
-		value: function parse(scanner) {
+		value: function parse(scanner, match, options) {
 			scanner.mark();
 			scanner.skipToLineEnd();
 			var content = scanner.pop();
+			var contentTokens = Inline.parse(content, options);
 
-			var isLastContent = scanner.isAtEnd || CharScanner.isLineEnd(scanner.getCharAtOffset(+1));
+			var isLastContent = scanner.isAtEnd || isLineEnd(scanner.getCharAtOffset(+1));
 
-			return new ParagraphBlock(content, isLastContent);
+			return new ParagraphBlock(contentTokens, isLastContent);
 		}
 	}, {
 		key: 'integrate',
 		value: function integrate(results, prev, curr) {
 			if (prev instanceof ParagraphBlock && !prev.isLastContent) {
-				prev.content += ' ' + curr.content;
+				prev.contentTokens += ' ' + curr.content;
 				prev.isLastContent = curr.isLastContent;
 			} else {
 				results.push(curr);
@@ -16533,10 +16476,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var _ = __webpack_require__(1);
 
 var _require = __webpack_require__(3),
-    Token = _require.Token;
+    BaseToken = _require.BaseToken;
 
-var CodeToken = function (_Token) {
-	_inherits(CodeToken, _Token);
+var CodeToken = function (_BaseToken) {
+	_inherits(CodeToken, _BaseToken);
 
 	function CodeToken(content) {
 		_classCallCheck(this, CodeToken);
@@ -16574,13 +16517,13 @@ var CodeToken = function (_Token) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new CodeToken(data);
+		value: function parse(scanner, match, options) {
+			return new CodeToken(match);
 		}
 	}]);
 
 	return CodeToken;
-}(Token);
+}(BaseToken);
 
 exports.CodeToken = CodeToken;
 
@@ -16600,20 +16543,19 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(3),
-    Token = _require.Token;
+    BaseToken = _require.BaseToken;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
-var ImageToken = function (_Token) {
-	_inherits(ImageToken, _Token);
+var ImageToken = function (_BaseToken) {
+	_inherits(ImageToken, _BaseToken);
 
-	function ImageToken(title, src) {
+	function ImageToken(titleTokens, src) {
 		_classCallCheck(this, ImageToken);
 
 		var _this = _possibleConstructorReturn(this, (ImageToken.__proto__ || Object.getPrototypeOf(ImageToken)).call(this));
 
-		_this.title = title;
+		_this.titleTokens = titleTokens;
 		_this.src = src;
 		return _this;
 	}
@@ -16623,7 +16565,7 @@ var ImageToken = function (_Token) {
 		value: function render(options, callback) {
 			var _this2 = this;
 
-			InlineScanner.parseAndRender(this.title, options, function (error, title) {
+			Inline.render(this.titleTokens, options, function (error, title) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -16677,13 +16619,17 @@ var ImageToken = function (_Token) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new ImageToken(data.title, data.src);
+		value: function parse(scanner, match, options) {
+			var titleTokens = Inline.parse(match.title, options);
+			var src = match.src;
+
+
+			return new ImageToken(titleTokens, src);
 		}
 	}]);
 
 	return ImageToken;
-}(Token);
+}(BaseToken);
 
 exports.ImageToken = ImageToken;
 
@@ -16703,20 +16649,19 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(3),
-    Token = _require.Token;
+    BaseToken = _require.BaseToken;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
-var LinkToken = function (_Token) {
-	_inherits(LinkToken, _Token);
+var LinkToken = function (_BaseToken) {
+	_inherits(LinkToken, _BaseToken);
 
-	function LinkToken(title, href) {
+	function LinkToken(titleTokens, href) {
 		_classCallCheck(this, LinkToken);
 
 		var _this = _possibleConstructorReturn(this, (LinkToken.__proto__ || Object.getPrototypeOf(LinkToken)).call(this));
 
-		_this.title = title;
+		_this.titleTokens = titleTokens;
 		_this.href = href;
 		return _this;
 	}
@@ -16726,7 +16671,7 @@ var LinkToken = function (_Token) {
 		value: function render(options, callback) {
 			var _this2 = this;
 
-			InlineScanner.parseAndRender(this.title, options, function (error, title) {
+			Inline.render(this.titleTokens, options, function (error, title) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -16774,13 +16719,17 @@ var LinkToken = function (_Token) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new LinkToken(data.title, data.href);
+		value: function parse(scanner, match, options) {
+			var titleTokens = Inline.parse(match.title, options);
+			var href = match.href;
+
+
+			return new LinkToken(titleTokens, href);
 		}
 	}]);
 
 	return LinkToken;
-}(Token);
+}(BaseToken);
 
 exports.LinkToken = LinkToken;
 
@@ -16800,27 +16749,26 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(3),
-    Token = _require.Token;
+    BaseToken = _require.BaseToken;
 
-var _require2 = __webpack_require__(0),
-    InlineScanner = _require2.InlineScanner;
+var Inline = __webpack_require__(0);
 
-var StrikeToken = function (_Token) {
-	_inherits(StrikeToken, _Token);
+var StrikeToken = function (_BaseToken) {
+	_inherits(StrikeToken, _BaseToken);
 
-	function StrikeToken(content) {
+	function StrikeToken(contentTokens) {
 		_classCallCheck(this, StrikeToken);
 
 		var _this = _possibleConstructorReturn(this, (StrikeToken.__proto__ || Object.getPrototypeOf(StrikeToken)).call(this));
 
-		_this.content = content;
+		_this.contentTokens = contentTokens;
 		return _this;
 	}
 
 	_createClass(StrikeToken, [{
 		key: 'render',
 		value: function render(options, callback) {
-			InlineScanner.parseAndRender(this.content, options, function (error, content) {
+			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
@@ -16853,13 +16801,14 @@ var StrikeToken = function (_Token) {
 		}
 	}, {
 		key: 'parse',
-		value: function parse(scanner, data) {
-			return new StrikeToken(data);
+		value: function parse(scanner, match, options) {
+			var contentTokens = Inline.parse(match, options);
+			return new StrikeToken(contentTokens);
 		}
 	}]);
 
 	return StrikeToken;
-}(Token);
+}(BaseToken);
 
 exports.StrikeToken = StrikeToken;
 
@@ -16879,12 +16828,12 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _require = __webpack_require__(3),
-    Token = _require.Token;
+    BaseToken = _require.BaseToken;
 
 var escapeHtml = __webpack_require__(9);
 
-var TextToken = function (_Token) {
-	_inherits(TextToken, _Token);
+var TextToken = function (_BaseToken) {
+	_inherits(TextToken, _BaseToken);
 
 	function TextToken(content) {
 		_classCallCheck(this, TextToken);
@@ -16907,7 +16856,7 @@ var TextToken = function (_Token) {
 	}]);
 
 	return TextToken;
-}(Token);
+}(BaseToken);
 
 exports.TextToken = TextToken;
 
@@ -18641,13 +18590,23 @@ module.exports = {
 
 var _ = __webpack_require__(1);
 var escapeHtml = __webpack_require__(9);
+var Block = __webpack_require__(15);
 
-var _require = __webpack_require__(15),
-    BlockScanner = _require.BlockScanner;
+function createOptions(options) {
+	return _.merge({
+		blockTypes: __webpack_require__(14),
+		tokenTypes: __webpack_require__(16),
+		sanitize: _.merge(escapeHtml.defaultOptions, { allowedAttrs: { '*': ['style'] } })
+	}, options);
+}
+
+function parse(buffer, options) {
+	return Block.parse(buffer, createOptions(options));
+}
 
 function render(buffer) {
 	var options = {};
-	var callback = new Function();
+	var callback = function callback() {};
 
 	if (arguments.length >= 3) {
 		options = arguments[1];
@@ -18656,15 +18615,10 @@ function render(buffer) {
 		callback = arguments[1];
 	}
 
-	options = _.merge({
-		blockTypes: __webpack_require__(14),
-		tokenTypes: __webpack_require__(16),
-		sanitize: _.merge(escapeHtml.defaultOptions, { allowedAttrs: { '*': ['style'] } })
-	}, options);
-
-	BlockScanner.parseAndRender(buffer, options, callback);
+	Block.parseAndRender(buffer, createOptions(options), callback);
 }
 
+exports.parse = parse;
 exports.render = render;
 
 /***/ })

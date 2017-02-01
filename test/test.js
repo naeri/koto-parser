@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {render} = require('../lib/');
+const {render} = require('../lib');
 
 function renderAndTest(buffer, options, test, callback) {
 	render(buffer, options, function(error, result) {
