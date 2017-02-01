@@ -86,9 +86,9 @@ return /******/ (function(modules) { // webpackBootstrap
 var _ = __webpack_require__(1);
 var async = __webpack_require__(5);
 var Scanner = __webpack_require__(4);
-var matchType = __webpack_require__(12);
+var matchType = __webpack_require__(13);
 
-var _require = __webpack_require__(26),
+var _require = __webpack_require__(12),
     TextToken = _require.TextToken;
 
 function parse(buffer, options) {
@@ -104,7 +104,7 @@ function parse(buffer, options) {
 
 			tokens.push(token);
 		} else {
-			var lastToken = _.last(scanner.tokens);
+			var lastToken = _.last(tokens);
 
 			if (_.isArray(lastToken)) {
 				lastToken.push(scanner.currentChar);
@@ -15126,7 +15126,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     Object.defineProperty(exports, '__esModule', { value: true });
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(8)(module), __webpack_require__(32).setImmediate, __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(8)(module), __webpack_require__(32).setImmediate, __webpack_require__(14)))
 
 /***/ }),
 /* 6 */
@@ -15618,6 +15618,54 @@ exports.ItalicToken = ItalicToken;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _require = __webpack_require__(3),
+    BaseToken = _require.BaseToken;
+
+var escapeHtml = __webpack_require__(9);
+
+var TextToken = function (_BaseToken) {
+	_inherits(TextToken, _BaseToken);
+
+	function TextToken(content) {
+		_classCallCheck(this, TextToken);
+
+		var _this = _possibleConstructorReturn(this, (TextToken.__proto__ || Object.getPrototypeOf(TextToken)).call(this));
+
+		_this.content = content;
+		return _this;
+	}
+
+	_createClass(TextToken, [{
+		key: 'render',
+		value: function render(options, callback) {
+			if (options.sanitize) {
+				callback(null, escapeHtml(this.content, options.sanitize));
+			} else {
+				callback(null, this.content);
+			}
+		}
+	}]);
+
+	return TextToken;
+}(BaseToken);
+
+exports.TextToken = TextToken;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 function matchType(scanner, types) {
 	for (var i = 0; i < types.length; i++) {
 		var type = types[i];
@@ -15636,7 +15684,7 @@ function matchType(scanner, types) {
 module.exports = matchType;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15823,16 +15871,16 @@ process.umask = function () {
 };
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = [__webpack_require__(17).BlockquoteBlock, __webpack_require__(18).CodeBlock, __webpack_require__(10).TermBlock, __webpack_require__(10).DescriptionBlock, __webpack_require__(19).HeadingBlock, __webpack_require__(20).ListItemBlock];
+module.exports = [__webpack_require__(18).BlockquoteBlock, __webpack_require__(19).CodeBlock, __webpack_require__(10).TermBlock, __webpack_require__(10).DescriptionBlock, __webpack_require__(20).HeadingBlock, __webpack_require__(21).ListItemBlock];
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15841,9 +15889,9 @@ module.exports = [__webpack_require__(17).BlockquoteBlock, __webpack_require__(1
 var _ = __webpack_require__(1);
 var async = __webpack_require__(5);
 var Scanner = __webpack_require__(4);
-var matchType = __webpack_require__(12);
+var matchType = __webpack_require__(13);
 
-var _require = __webpack_require__(21),
+var _require = __webpack_require__(22),
     ParagraphBlock = _require.ParagraphBlock;
 
 function parse(buffer, options) {
@@ -15900,16 +15948,16 @@ exports.render = render;
 exports.parseAndRender = parseAndRender;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = [__webpack_require__(22).CodeToken, __webpack_require__(11).BoldToken, __webpack_require__(11).ItalicToken, __webpack_require__(23).ImageToken, __webpack_require__(24).LinkToken, __webpack_require__(25).StrikeToken];
+module.exports = [__webpack_require__(23).CodeToken, __webpack_require__(11).BoldToken, __webpack_require__(11).ItalicToken, __webpack_require__(24).ImageToken, __webpack_require__(25).LinkToken, __webpack_require__(26).StrikeToken];
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15976,7 +16024,7 @@ var BlockquoteBlock = function (_BaseBlock) {
 exports.BlockquoteBlock = BlockquoteBlock;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16077,7 +16125,7 @@ var CodeBlock = function (_BaseBlock) {
 exports.CodeBlock = CodeBlock;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16112,11 +16160,13 @@ var HeadingBlock = function (_BaseBlock) {
 	_createClass(HeadingBlock, [{
 		key: 'render',
 		value: function render(options, callback) {
+			var _this2 = this;
+
 			Inline.render(this.contentTokens, options, function (error, content) {
 				if (error) {
 					callback(error, null);
 				} else {
-					callback(null, '<h' + this.level + '>' + content + '</h' + this.level + '>');
+					callback(null, '<h' + _this2.level + '>' + content + '</h' + _this2.level + '>');
 				}
 			});
 		}
@@ -16156,7 +16206,7 @@ var HeadingBlock = function (_BaseBlock) {
 exports.HeadingBlock = HeadingBlock;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16387,7 +16437,7 @@ var ListItemBlock = function (_BaseBlock2) {
 exports.ListItemBlock = ListItemBlock;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16409,6 +16459,9 @@ var _require2 = __webpack_require__(4),
 
 var Inline = __webpack_require__(0);
 
+var _require3 = __webpack_require__(12),
+    TextToken = _require3.TextToken;
+
 var ParagraphBlock = function (_BaseBlock) {
 	_inherits(ParagraphBlock, _BaseBlock);
 
@@ -16423,6 +16476,14 @@ var ParagraphBlock = function (_BaseBlock) {
 	}
 
 	_createClass(ParagraphBlock, [{
+		key: 'append',
+		value: function append(paragraph) {
+			this.contentTokens.push(new TextToken(' '));
+			this.contentTokens = this.contentTokens.concat(paragraph.contentTokens);
+
+			this.isLastContent = paragraph.isLastContent;
+		}
+	}, {
 		key: 'render',
 		value: function render(options, callback) {
 			Inline.render(this.contentTokens, options, function (error, content) {
@@ -16449,8 +16510,7 @@ var ParagraphBlock = function (_BaseBlock) {
 		key: 'integrate',
 		value: function integrate(results, prev, curr) {
 			if (prev instanceof ParagraphBlock && !prev.isLastContent) {
-				prev.contentTokens += ' ' + curr.content;
-				prev.isLastContent = curr.isLastContent;
+				prev.append(curr);
 			} else {
 				results.push(curr);
 			}
@@ -16463,7 +16523,7 @@ var ParagraphBlock = function (_BaseBlock) {
 exports.ParagraphBlock = ParagraphBlock;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16532,7 +16592,7 @@ var CodeToken = function (_BaseToken) {
 exports.CodeToken = CodeToken;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16638,7 +16698,7 @@ var ImageToken = function (_BaseToken) {
 exports.ImageToken = ImageToken;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16738,7 +16798,7 @@ var LinkToken = function (_BaseToken) {
 exports.LinkToken = LinkToken;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16815,54 +16875,6 @@ var StrikeToken = function (_BaseToken) {
 }(BaseToken);
 
 exports.StrikeToken = StrikeToken;
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _require = __webpack_require__(3),
-    BaseToken = _require.BaseToken;
-
-var escapeHtml = __webpack_require__(9);
-
-var TextToken = function (_BaseToken) {
-	_inherits(TextToken, _BaseToken);
-
-	function TextToken(content) {
-		_classCallCheck(this, TextToken);
-
-		var _this = _possibleConstructorReturn(this, (TextToken.__proto__ || Object.getPrototypeOf(TextToken)).call(this));
-
-		_this.content = content;
-		return _this;
-	}
-
-	_createClass(TextToken, [{
-		key: 'render',
-		value: function render(options, callback) {
-			if (options.sanitize) {
-				callback(null, escapeHtml(this.content, options.sanitize));
-			} else {
-				callback(null, this.content);
-			}
-		}
-	}]);
-
-	return TextToken;
-}(BaseToken);
-
-exports.TextToken = TextToken;
 
 /***/ }),
 /* 27 */
@@ -17785,7 +17797,7 @@ exports.encode = exports.stringify = __webpack_require__(29);
     attachTo.setImmediate = setImmediate;
     attachTo.clearImmediate = clearImmediate;
 })(typeof self === "undefined" ? typeof global === "undefined" ? undefined : global : self);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(13)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6), __webpack_require__(14)))
 
 /***/ }),
 /* 32 */
@@ -18594,12 +18606,12 @@ module.exports = {
 
 var _ = __webpack_require__(1);
 var escapeHtml = __webpack_require__(9);
-var Block = __webpack_require__(15);
+var Block = __webpack_require__(16);
 
 function createOptions(options) {
 	return _.merge({
-		blockTypes: __webpack_require__(14),
-		tokenTypes: __webpack_require__(16),
+		blockTypes: __webpack_require__(15),
+		tokenTypes: __webpack_require__(17),
 		sanitize: _.merge(escapeHtml.defaultOptions, { allowedAttrs: { '*': ['style'] } })
 	}, options);
 }
