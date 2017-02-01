@@ -116,15 +116,21 @@ function parse(buffer, options) {
 		scanner.skip(+1);
 	}
 
-	return tokens;
+	return integrate(tokens);
+}
+
+function integrate(tokens) {
+	return tokens.map(function (token) {
+		if (_.isArray(token)) {
+			return new TextToken(token.join(''));
+		} else {
+			return token;
+		}
+	});
 }
 
 function render(tokens, options, callback) {
 	async.map(tokens, function (token, callback) {
-		if (_.isArray(token)) {
-			token = new TextToken(token.join(''));
-		}
-
 		token.render(options, callback);
 	}, function (error, renderedTokens) {
 		if (error) {
@@ -15198,8 +15204,6 @@ module.exports = function (module) {
 "use strict";
 
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _ = __webpack_require__(1);
 var url = __webpack_require__(33);
 
@@ -15214,7 +15218,8 @@ var defaultOptions = {
     allowNullProtocol: true
 };
 
-var htmlTagRegExp = /<\s*(\/?)\s*([a-z][a-z0-9]*)\b([^>]*)>/gi;
+var htmlTagRegExp = /<\s*(\/?)\s*([a-z][a-z0-9]*)\b(.*)>/gi;
+var htmlAttrsRegExp = /([a-z]+)(?:=(?:"(.+?)"|'(.+?)'))?\s*/gi;
 
 function escapeHtml(text, options) {
     options = _.extend(defaultOptions, options);
@@ -15232,14 +15237,14 @@ function escapeTag(isClosing, tagName, tagAttrs, options) {
     var _tagAttrs = '';
 
     if (!isClosing) {
-        tagAttrs.split(' ').forEach(function (attr) {
-            var _attr$trim$split = attr.trim().split('=', 2),
-                _attr$trim$split2 = _slicedToArray(_attr$trim$split, 2),
-                attrName = _attr$trim$split2[0],
-                attrValue = _attr$trim$split2[1];
+        var match = null;
+
+        while ((match = htmlAttrsRegExp.exec(tagAttrs)) !== null) {
+            var attrName = match[1];
+            var attrValue = match[2] || match[3];
 
             if (!isAllowed(tagName, attrName, options.allowedAttrs)) {
-                return;
+                continue;
             }
 
             if (attrValue) {
@@ -15254,7 +15259,7 @@ function escapeTag(isClosing, tagName, tagAttrs, options) {
 
             _tagAttrs += ' ' + attrName;
             _tagAttrs += attrValue ? '="' + attrValue + '"' : '';
-        });
+        }
     }
 
     return '<' + (isClosing ? '/' : '') + tagName + _tagAttrs + '>';
@@ -15281,7 +15286,6 @@ function trimQuotes(text) {
 }
 
 function escapeHref(tagName, href, options) {
-    console.log(tagName, href);
     var parsed = url.parse(href);
 
     var protocol = parsed.protocol;
@@ -16281,8 +16285,8 @@ var ListBlock = function (_BaseBlock) {
 	return ListBlock;
 }(BaseBlock);
 
-var ListItemBlock = function (_Block) {
-	_inherits(ListItemBlock, _Block);
+var ListItemBlock = function (_BaseBlock2) {
+	_inherits(ListItemBlock, _BaseBlock2);
 
 	function ListItemBlock(isOrdered, indent, contentTokens) {
 		_classCallCheck(this, ListItemBlock);
@@ -16378,7 +16382,7 @@ var ListItemBlock = function (_Block) {
 	}]);
 
 	return ListItemBlock;
-}(Block);
+}(BaseBlock);
 
 exports.ListItemBlock = ListItemBlock;
 
@@ -16405,8 +16409,8 @@ var _require2 = __webpack_require__(4),
 
 var Inline = __webpack_require__(0);
 
-var ParagraphBlock = function (_Block) {
-	_inherits(ParagraphBlock, _Block);
+var ParagraphBlock = function (_BaseBlock) {
+	_inherits(ParagraphBlock, _BaseBlock);
 
 	function ParagraphBlock(contentTokens, isLastContent) {
 		_classCallCheck(this, ParagraphBlock);
@@ -16454,7 +16458,7 @@ var ParagraphBlock = function (_Block) {
 	}]);
 
 	return ParagraphBlock;
-}(Block);
+}(BaseBlock);
 
 exports.ParagraphBlock = ParagraphBlock;
 
@@ -18611,7 +18615,7 @@ function render(buffer) {
 	if (arguments.length >= 3) {
 		options = arguments[1];
 		callback = arguments[2];
-	} else {
+	} else if (arguments.length >= 2) {
 		callback = arguments[1];
 	}
 

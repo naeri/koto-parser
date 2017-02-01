@@ -34,7 +34,9 @@ KotoParser.render('I am using **markdown**', function(error, result) {
 </script>
 ```
 
-### KotoParser.render(text[, options], callback);
+### KotoParser.render(text[, options], callback)
+
+Parses and renders all the blocks and tokens of the given text.
 
  Argument              | Default                           | Description
 -----------------------|-----------------------------------|-------------
@@ -44,6 +46,11 @@ KotoParser.render('I am using **markdown**', function(error, result) {
  [options.tokenTypes]  |                                   | An *array* of [token-type plugins](/docs/plugin.md#)
  [options.sanitize]    | See [index.js](/lib/index.js#L19) | An option passed to [escape-html-whitelist](https://github.com/hatamake/escape-html). To turn off the sanitization, set to `false`.
  callback              |                                   | A callback function that takes two arguments: `error` and `result`
+
+### KotoParser.parse(text[, options])
+
+Parses all the blocks and tokens of the given text, but not renders them.
+Returns an *array* of the root blocks.
 
 ### Plugin Development Guide
 
