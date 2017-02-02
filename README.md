@@ -1,6 +1,6 @@
 # KotoParser
 
-[![npm version](https://badge.fury.io/js/koto-parser.png)](https://badge.fury.io/js/koto-parser)
+[![npm version](https://badge.fury.io/js/koto-parser.svg)](https://badge.fury.io/js/koto-parser)
 
 *KotoParser* is an easily-extensible asynchronous Markdown parser.
 [Live Demo](https://hatamake.github.io/koto-parser/demo/).
@@ -38,14 +38,14 @@ KotoParser.render('I am using **markdown**', function(error, result) {
 
 Parses and renders all the blocks and tokens of the given text.
 
- Argument              | Default                           | Description
------------------------|-----------------------------------|-------------
- text                  |                                   | 
- [options]             |                                   | 
- [options.blockTypes]  |                                   | An *array* of [block-type plugins](/docs/plugin.md#)
- [options.tokenTypes]  |                                   | An *array* of [token-type plugins](/docs/plugin.md#)
- [options.sanitize]    | See [index.js](/lib/index.js#L19) | An option passed to [escape-html-whitelist](https://github.com/hatamake/escape-html). To turn off the sanitization, set to `false`.
- callback              |                                   | A callback function that takes two arguments: `error` and `result`
+ Argument              | Default                          | Description
+-----------------------|----------------------------------|-------------
+ text                  |                                  | 
+ [options]             |                                  | 
+ [options.blockTypes]  |                                  | An *array* of [block-type plugins](/doc/plugin.md#what-is-my-plugins-type---block-or-token)
+ [options.tokenTypes]  |                                  | An *array* of [token-type plugins](/doc/plugin.md#what-is-my-plugins-type---block-or-token)
+ [options.sanitize]    | See [index.js](/lib/index.js#L9) | An option passed to [escape-html-whitelist](https://github.com/hatamake/escape-html). To turn off the sanitization, set to `false`.
+ callback              |                                  | A callback function that takes two arguments: `error` and `result`
 
 ### KotoParser.parse(text[, options])
 
