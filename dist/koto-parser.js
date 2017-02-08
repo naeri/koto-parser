@@ -113,9 +113,9 @@ function parse(buffer, options) {
 			} else {
 				tokens.push([scanner.currentChar]);
 			}
-		}
 
-		scanner.skip(+1);
+			scanner.skip(+1);
+		}
 	}
 
 	return integrate(tokens);
@@ -6482,13 +6482,18 @@ var BoldToken = function (_BaseToken) {
 			scanner.mark(); // [start, contentStart]
 
 			if (!scanner.find('**')) {
-				scanner.popAndBack();
-				scanner.popAndBack();
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
 				return null;
 			}
 
-			var content = scanner.pop();
-			scanner.skip(+1);
+			var content = scanner.pop(); // [start]
+			scanner.skip(+2);
+
+			if (!content) {
+				scanner.popAndBack(); // []
+				return null;
+			}
 
 			return content;
 		}
@@ -6529,22 +6534,30 @@ var ItalicToken = function (_BaseToken2) {
 	}], [{
 		key: 'match',
 		value: function match(scanner) {
-			scanner.mark();
+			scanner.mark(); // [start]
 
 			if (!scanner.ahead('*')) {
 				return null;
 			}
 
 			scanner.skip(+1);
-			scanner.mark();
+			scanner.mark(); // [start, contentStart]
 
 			if (!scanner.find('*')) {
-				scanner.popAndBack();
-				scanner.popAndBack();
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
 				return null;
 			}
 
-			return scanner.pop();
+			var content = scanner.pop(); // [start]
+			scanner.skip(+1);
+
+			if (!content) {
+				scanner.popAndBack(); // []
+				return null;
+			}
+
+			return content;
 		}
 	}, {
 		key: 'parse',
@@ -6915,17 +6928,10 @@ function parse(buffer, options) {
 		blocks.push(block);
 	}
 
-	return integrate(blocks);
-}
-
-function integrate(blocks) {
-	var result = [];
-
-	blocks.forEach(function (curr, index) {
-		curr.constructor.integrate(result, _last(result), curr);
-	});
-
-	return result;
+	return blocks.reduce(function (result, block) {
+		block.constructor.integrate(result, _last(result), block);
+		return result;
+	}, []);
 }
 
 function render(blocks, options, callback) {
@@ -9742,7 +9748,15 @@ var CodeToken = function (_BaseToken) {
 				return null;
 			}
 
-			return scanner.pop();
+			var content = scanner.pop();
+			scanner.skip(+1);
+
+			if (!content) {
+				scanner.popAndBack();
+				return null;
+			}
+
+			return content;
 		}
 	}, {
 		key: 'parse',
@@ -9814,7 +9828,7 @@ var ImageToken = function (_BaseToken) {
 			scanner.skip(+1);
 
 			if (!scanner.ahead('[')) {
-				scanner.popAndBack();
+				scanner.popAndBack(); // []
 				return null;
 			}
 
@@ -9822,14 +9836,15 @@ var ImageToken = function (_BaseToken) {
 			scanner.mark(); // [start, titleStart]
 
 			if (!scanner.find(']')) {
-				scanner.popAndBack();
-				scanner.popAndBack();
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
 				return null;
 			}
 
 			var title = scanner.pop(); // [start]
 
-			if (!scanner.find('(')) {
+			if (!title || !scanner.find('(')) {
+				scanner.popAndBack(); // []
 				return null;
 			}
 
@@ -9837,12 +9852,18 @@ var ImageToken = function (_BaseToken) {
 			scanner.mark(); // [start, srcStart]
 
 			if (!scanner.find(')')) {
-				scanner.popAndBack();
-				scanner.popAndBack();
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
 				return null;
 			}
 
-			var src = scanner.pop();
+			var src = scanner.pop(); // [start]
+			scanner.skip(+1);
+
+			if (!src) {
+				scanner.popAndBack(); // []
+				return null;
+			}
 
 			return { title: title, src: src };
 		}
@@ -9921,15 +9942,15 @@ var LinkToken = function (_BaseToken) {
 			scanner.mark(); // [start, titleStart]
 
 			if (!scanner.find(']')) {
-				scanner.popAndBack();
-				scanner.popAndBack();
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
 				return null;
 			}
 
 			var title = scanner.pop(); // [start]
 
-			if (!scanner.find('(')) {
-				scanner.popAndBack();
+			if (!title || !scanner.find('(')) {
+				scanner.popAndBack(); // []
 				return null;
 			}
 
@@ -9937,12 +9958,18 @@ var LinkToken = function (_BaseToken) {
 			scanner.mark(); // [start, hrefStart]
 
 			if (!scanner.find(')')) {
-				scanner.popAndBack();
-				scanner.popAndBack();
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
 				return null;
 			}
 
-			var href = scanner.pop();
+			var href = scanner.pop(); // [start]
+			scanner.skip(+1);
+
+			if (!href) {
+				scanner.popAndBack(); // []
+				return null;
+			}
 
 			return { title: title, href: href };
 		}
@@ -10018,13 +10045,18 @@ var StrikeToken = function (_BaseToken) {
 			scanner.mark(); // [start, contentStart]
 
 			if (!scanner.find('~~')) {
-				scanner.popAndBack();
-				scanner.popAndBack();
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
 				return null;
 			}
 
-			var content = scanner.pop();
-			scanner.skip(+1);
+			var content = scanner.pop(); // [start]
+			scanner.skip(+2);
+
+			if (!content) {
+				scanner.popAndBack(); // []
+				return null;
+			}
 
 			return content;
 		}
