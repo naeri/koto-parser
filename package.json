@@ -1,6 +1,6 @@
 {
   "name": "koto-parser",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "KotoParser: Easily-extensible asynchronous Markdown parser",
   "main": "lib/index.js",
   "directories": {
@@ -11,11 +11,11 @@
   "dependencies": {
     "async": "^2.1.4",
     "escape-html-whitelist": "^0.1.4",
+    "lodash.defaults": "^4.2.0",
     "lodash.escape": "^4.0.1",
     "lodash.first": "^3.0.0",
     "lodash.isarray": "^4.0.0",
-    "lodash.last": "^3.0.0",
-    "lodash.merge": "^4.6.0"
+    "lodash.last": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.22.1",
