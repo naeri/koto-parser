@@ -9842,8 +9842,9 @@ var ImageToken = function (_BaseToken) {
 			}
 
 			var title = scanner.pop(); // [start]
+			scanner.skip(+1);
 
-			if (!title || !scanner.find('(')) {
+			if (!title || !scanner.ahead('(')) {
 				scanner.popAndBack(); // []
 				return null;
 			}
@@ -9948,8 +9949,9 @@ var LinkToken = function (_BaseToken) {
 			}
 
 			var title = scanner.pop(); // [start]
+			scanner.skip(+1);
 
-			if (!title || !scanner.find('(')) {
+			if (!title || !scanner.ahead('(')) {
 				scanner.popAndBack(); // []
 				return null;
 			}
