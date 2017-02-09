@@ -7851,13 +7851,9 @@ var HeadingBlock = function (_BaseBlock) {
 
 			var level = 0;
 
-			while (scanner.currentChar === '#') {
+			while (scanner.currentChar === '#' && level < 6) {
 				level++;
 				scanner.skip(+1);
-
-				if (level === 6) {
-					break;
-				}
 			}
 
 			if (level === 0 || !Scanner.isLineSpace(scanner.currentChar)) {

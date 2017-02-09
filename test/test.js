@@ -32,7 +32,7 @@ describe('Blocks', function() {
 
 	it('Heading', function(done) {
 		renderAndTest('# Headline', {
-			blockTypes: [require('../lib/blocks/heading').TermBlock]
+			blockTypes: [require('../lib/blocks/heading').HeadingBlock]
 		}, '<h1>Headline</h1>', done);
 	});
 
@@ -93,10 +93,10 @@ describe('Tokens', function() {
 	});
 
 	it('Image', function(done) {
-		renderAndTest('![Image Title](https://iamge-src/)', {
+		renderAndTest('![Image Title](https://image-src/)', {
 			blockTypes: [require('../lib/blocks/paragraph').ParagraphBlock],
-			tokenTypes: [require('../lib/tokens/link').LinkToken]
-		}, '<p><img title="Image Title" src="https://iamge-src/"></p>', done);
+			tokenTypes: [require('../lib/tokens/image').ImageToken]
+		}, '<p><img title="Image Title" src="https://image-src/"></p>', done);
 	});
 
 	it('Strike', function(done) {
