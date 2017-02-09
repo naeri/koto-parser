@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 40);
+/******/ 	return __webpack_require__(__webpack_require__.s = 42);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -84,13 +84,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 var _last = __webpack_require__(7);
-var _isArray = __webpack_require__(13);
+var _isArray = __webpack_require__(12);
 var async = __webpack_require__(4);
 
 var Scanner = __webpack_require__(3);
-var matchType = __webpack_require__(12);
+var matchType = __webpack_require__(11);
 
-var _require = __webpack_require__(11),
+var _require = __webpack_require__(10),
     TextToken = _require.TextToken;
 
 function parse(buffer, options) {
@@ -162,6 +162,44 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var BaseToken = function () {
+	function BaseToken() {
+		_classCallCheck(this, BaseToken);
+	}
+
+	_createClass(BaseToken, [{
+		key: 'render',
+		value: function render(options, callback) {
+			callback(null, '');
+		}
+	}], [{
+		key: 'match',
+		value: function match(scanner) {
+			return null;
+		}
+	}, {
+		key: 'parse',
+		value: function parse(scanner, data) {
+			return new BaseToken();
+		}
+	}]);
+
+	return BaseToken;
+}();
+
+exports.BaseToken = BaseToken;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 var BaseBlock = function () {
 	function BaseBlock() {
 		_classCallCheck(this, BaseBlock);
@@ -193,44 +231,6 @@ var BaseBlock = function () {
 }();
 
 exports.BaseBlock = BaseBlock;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var BaseToken = function () {
-	function BaseToken() {
-		_classCallCheck(this, BaseToken);
-	}
-
-	_createClass(BaseToken, [{
-		key: 'render',
-		value: function render(options, callback) {
-			callback(null, '');
-		}
-	}], [{
-		key: 'match',
-		value: function match(scanner) {
-			return null;
-		}
-	}, {
-		key: 'parse',
-		value: function parse(scanner, data) {
-			return new BaseToken();
-		}
-	}]);
-
-	return BaseToken;
-}();
-
-exports.BaseToken = BaseToken;
 
 /***/ }),
 /* 3 */
@@ -5825,7 +5825,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
     Object.defineProperty(exports, '__esModule', { value: true });
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(15)(module), __webpack_require__(37).setImmediate, __webpack_require__(14)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(14)(module), __webpack_require__(39).setImmediate, __webpack_require__(13)))
 
 /***/ }),
 /* 5 */
@@ -6122,9 +6122,9 @@ module.exports = last;
 "use strict";
 
 
-var _assign = __webpack_require__(30);
+var _assign = __webpack_require__(32);
 var _escape = __webpack_require__(6);
-var url = __webpack_require__(38);
+var url = __webpack_require__(40);
 
 var defaultOptions = {
     allowedTags: ['br', 'hr', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'pre', 'code', 'ul', 'ol', 'nl', 'li', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'b', 'strong', 'i', 'em', 'strike', 'a'],
@@ -6245,7 +6245,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var async = __webpack_require__(4);
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     BaseBlock = _require.BaseBlock;
 
 var Inline = __webpack_require__(0);
@@ -6411,154 +6411,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(2),
-    BaseToken = _require.BaseToken;
-
-var Inline = __webpack_require__(0);
-
-var BoldToken = function (_BaseToken) {
-	_inherits(BoldToken, _BaseToken);
-
-	function BoldToken(contentTokens) {
-		_classCallCheck(this, BoldToken);
-
-		var _this = _possibleConstructorReturn(this, (BoldToken.__proto__ || Object.getPrototypeOf(BoldToken)).call(this));
-
-		_this.contentTokens = contentTokens;
-		return _this;
-	}
-
-	_createClass(BoldToken, [{
-		key: 'render',
-		value: function render(options, callback) {
-			Inline.render(this.contentTokens, options, function (error, content) {
-				if (error) {
-					callback(error, null);
-				} else {
-					callback(null, '<strong>' + content + '</strong>');
-				}
-			});
-		}
-	}], [{
-		key: 'match',
-		value: function match(scanner) {
-			scanner.mark(); // [start]
-
-			if (!scanner.ahead('**')) {
-				return null;
-			}
-
-			scanner.skip(+2);
-			scanner.mark(); // [start, contentStart]
-
-			if (!scanner.find('**')) {
-				scanner.popAndBack(); // [start]
-				scanner.popAndBack(); // []
-				return null;
-			}
-
-			var content = scanner.pop(); // [start]
-			scanner.skip(+2);
-
-			if (!content) {
-				scanner.popAndBack(); // []
-				return null;
-			}
-
-			return content;
-		}
-	}, {
-		key: 'parse',
-		value: function parse(scanner, match, options) {
-			var contentTokens = Inline.parse(match, options);
-			return new BoldToken(contentTokens);
-		}
-	}]);
-
-	return BoldToken;
-}(BaseToken);
-
-var ItalicToken = function (_BaseToken2) {
-	_inherits(ItalicToken, _BaseToken2);
-
-	function ItalicToken(contentTokens) {
-		_classCallCheck(this, ItalicToken);
-
-		var _this2 = _possibleConstructorReturn(this, (ItalicToken.__proto__ || Object.getPrototypeOf(ItalicToken)).call(this));
-
-		_this2.contentTokens = contentTokens;
-		return _this2;
-	}
-
-	_createClass(ItalicToken, [{
-		key: 'render',
-		value: function render(options, callback) {
-			Inline.render(this.contentTokens, options, function (error, content) {
-				if (error) {
-					callback(error, null);
-				} else {
-					callback(null, '<i>' + content + '</i>');
-				}
-			});
-		}
-	}], [{
-		key: 'match',
-		value: function match(scanner) {
-			scanner.mark(); // [start]
-
-			if (!scanner.ahead('*')) {
-				return null;
-			}
-
-			scanner.skip(+1);
-			scanner.mark(); // [start, contentStart]
-
-			if (!scanner.find('*')) {
-				scanner.popAndBack(); // [start]
-				scanner.popAndBack(); // []
-				return null;
-			}
-
-			var content = scanner.pop(); // [start]
-			scanner.skip(+1);
-
-			if (!content) {
-				scanner.popAndBack(); // []
-				return null;
-			}
-
-			return content;
-		}
-	}, {
-		key: 'parse',
-		value: function parse(scanner, match, options) {
-			var contentTokens = Inline.parse(match, options);
-			return new ItalicToken(contentTokens);
-		}
-	}]);
-
-	return ItalicToken;
-}(BaseToken);
-
-exports.BoldToken = BoldToken;
-exports.ItalicToken = ItalicToken;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     BaseToken = _require.BaseToken;
 
 var escapeHtml = __webpack_require__(8);
@@ -6592,7 +6445,7 @@ var TextToken = function (_BaseToken) {
 exports.TextToken = TextToken;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6616,7 +6469,7 @@ function matchType(scanner, types) {
 module.exports = matchType;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6659,7 +6512,7 @@ var isArray = Array.isArray;
 module.exports = isArray;
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6846,7 +6699,7 @@ process.umask = function () {
 };
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6876,7 +6729,7 @@ module.exports = function (module) {
 };
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
@@ -6885,16 +6738,16 @@ module.exports = __webpack_amd_options__;
 /* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = [__webpack_require__(21).BlockquoteBlock, __webpack_require__(22).CodeBlock, __webpack_require__(9).TermBlock, __webpack_require__(9).DescriptionBlock, __webpack_require__(23).HeadingBlock, __webpack_require__(24).ListItemBlock];
+module.exports = [__webpack_require__(20).BlockquoteBlock, __webpack_require__(21).CodeBlock, __webpack_require__(9).TermBlock, __webpack_require__(9).DescriptionBlock, __webpack_require__(22).HeadingBlock, __webpack_require__(23).ListItemBlock];
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6903,9 +6756,9 @@ module.exports = [__webpack_require__(21).BlockquoteBlock, __webpack_require__(2
 var _last = __webpack_require__(7);
 var async = __webpack_require__(4);
 var Scanner = __webpack_require__(3);
-var matchType = __webpack_require__(12);
+var matchType = __webpack_require__(11);
 
-var _require = __webpack_require__(25),
+var _require = __webpack_require__(24),
     ParagraphBlock = _require.ParagraphBlock;
 
 function parse(buffer, options) {
@@ -6955,16 +6808,16 @@ exports.render = render;
 exports.parseAndRender = parseAndRender;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = [__webpack_require__(26).CodeToken, __webpack_require__(10).BoldToken, __webpack_require__(10).ItalicToken, __webpack_require__(27).ImageToken, __webpack_require__(28).LinkToken, __webpack_require__(29).StrikeToken];
+module.exports = [__webpack_require__(26).CodeToken, __webpack_require__(25).BoldToken, __webpack_require__(28).ItalicToken, __webpack_require__(31).UnderlineToken, __webpack_require__(30).StrikeToken, __webpack_require__(27).ImageToken, __webpack_require__(29).LinkToken];
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7630,7 +7483,7 @@ function keysIn(object) {
 module.exports = defaults;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7644,7 +7497,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     BaseBlock = _require.BaseBlock;
 
 var Inline = __webpack_require__(0);
@@ -7697,7 +7550,7 @@ var BlockquoteBlock = function (_BaseBlock) {
 exports.BlockquoteBlock = BlockquoteBlock;
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7713,7 +7566,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var _escape = __webpack_require__(6);
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     BaseBlock = _require.BaseBlock;
 
 var _require2 = __webpack_require__(3),
@@ -7798,7 +7651,7 @@ var CodeBlock = function (_BaseBlock) {
 exports.CodeBlock = CodeBlock;
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7812,7 +7665,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     BaseBlock = _require.BaseBlock;
 
 var Scanner = __webpack_require__(3);
@@ -7883,7 +7736,7 @@ var HeadingBlock = function (_BaseBlock) {
 exports.HeadingBlock = HeadingBlock;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7897,12 +7750,12 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _first = __webpack_require__(31);
+var _first = __webpack_require__(33);
 var _last = __webpack_require__(7);
-var _isArray = __webpack_require__(13);
+var _isArray = __webpack_require__(12);
 var async = __webpack_require__(4);
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     BaseBlock = _require.BaseBlock;
 
 var Inline = __webpack_require__(0);
@@ -8116,7 +7969,7 @@ var ListItemBlock = function (_BaseBlock2) {
 exports.ListItemBlock = ListItemBlock;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8130,7 +7983,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(1),
+var _require = __webpack_require__(2),
     BaseBlock = _require.BaseBlock;
 
 var _require2 = __webpack_require__(3),
@@ -8138,7 +7991,7 @@ var _require2 = __webpack_require__(3),
 
 var Inline = __webpack_require__(0);
 
-var _require3 = __webpack_require__(11),
+var _require3 = __webpack_require__(10),
     TextToken = _require3.TextToken;
 
 var ParagraphBlock = function (_BaseBlock) {
@@ -8202,6 +8055,90 @@ var ParagraphBlock = function (_BaseBlock) {
 exports.ParagraphBlock = ParagraphBlock;
 
 /***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _require = __webpack_require__(1),
+    BaseToken = _require.BaseToken;
+
+var Inline = __webpack_require__(0);
+
+var BoldToken = function (_BaseToken) {
+	_inherits(BoldToken, _BaseToken);
+
+	function BoldToken(contentTokens) {
+		_classCallCheck(this, BoldToken);
+
+		var _this = _possibleConstructorReturn(this, (BoldToken.__proto__ || Object.getPrototypeOf(BoldToken)).call(this));
+
+		_this.contentTokens = contentTokens;
+		return _this;
+	}
+
+	_createClass(BoldToken, [{
+		key: 'render',
+		value: function render(options, callback) {
+			Inline.render(this.contentTokens, options, function (error, content) {
+				if (error) {
+					callback(error, null);
+				} else {
+					callback(null, '<strong>' + content + '</strong>');
+				}
+			});
+		}
+	}], [{
+		key: 'match',
+		value: function match(scanner) {
+			scanner.mark(); // [start]
+
+			if (!scanner.ahead('**')) {
+				return null;
+			}
+
+			scanner.skip(+2);
+			scanner.mark(); // [start, contentStart]
+
+			if (!scanner.find('**')) {
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
+				return null;
+			}
+
+			var content = scanner.pop(); // [start]
+			scanner.skip(+2);
+
+			if (!content) {
+				scanner.popAndBack(); // []
+				return null;
+			}
+
+			return content;
+		}
+	}, {
+		key: 'parse',
+		value: function parse(scanner, match, options) {
+			var contentTokens = Inline.parse(match, options);
+			return new BoldToken(contentTokens);
+		}
+	}]);
+
+	return BoldToken;
+}(BaseToken);
+
+exports.BoldToken = BoldToken;
+
+/***/ }),
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8218,7 +8155,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var _escape = __webpack_require__(6);
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     BaseToken = _require.BaseToken;
 
 var CodeToken = function (_BaseToken) {
@@ -8293,7 +8230,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     BaseToken = _require.BaseToken;
 
 var Inline = __webpack_require__(0);
@@ -8407,7 +8344,91 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
+    BaseToken = _require.BaseToken;
+
+var Inline = __webpack_require__(0);
+
+var ItalicToken = function (_BaseToken) {
+	_inherits(ItalicToken, _BaseToken);
+
+	function ItalicToken(contentTokens) {
+		_classCallCheck(this, ItalicToken);
+
+		var _this = _possibleConstructorReturn(this, (ItalicToken.__proto__ || Object.getPrototypeOf(ItalicToken)).call(this));
+
+		_this.contentTokens = contentTokens;
+		return _this;
+	}
+
+	_createClass(ItalicToken, [{
+		key: 'render',
+		value: function render(options, callback) {
+			Inline.render(this.contentTokens, options, function (error, content) {
+				if (error) {
+					callback(error, null);
+				} else {
+					callback(null, '<i>' + content + '</i>');
+				}
+			});
+		}
+	}], [{
+		key: 'match',
+		value: function match(scanner) {
+			scanner.mark(); // [start]
+
+			if (!scanner.ahead('*')) {
+				return null;
+			}
+
+			scanner.skip(+1);
+			scanner.mark(); // [start, contentStart]
+
+			if (!scanner.find('*')) {
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
+				return null;
+			}
+
+			var content = scanner.pop(); // [start]
+			scanner.skip(+1);
+
+			if (!content) {
+				scanner.popAndBack(); // []
+				return null;
+			}
+
+			return content;
+		}
+	}, {
+		key: 'parse',
+		value: function parse(scanner, match, options) {
+			var contentTokens = Inline.parse(match, options);
+			return new ItalicToken(contentTokens);
+		}
+	}]);
+
+	return ItalicToken;
+}(BaseToken);
+
+exports.ItalicToken = ItalicToken;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _require = __webpack_require__(1),
     BaseToken = _require.BaseToken;
 
 var Inline = __webpack_require__(0);
@@ -8500,7 +8521,7 @@ var LinkToken = function (_BaseToken) {
 exports.LinkToken = LinkToken;
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8514,7 +8535,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _require = __webpack_require__(2),
+var _require = __webpack_require__(1),
     BaseToken = _require.BaseToken;
 
 var Inline = __webpack_require__(0);
@@ -8538,7 +8559,7 @@ var StrikeToken = function (_BaseToken) {
 				if (error) {
 					callback(error, null);
 				} else {
-					callback(null, '<strike>' + content + '</strike>');
+					callback(null, '<del>' + content + '</del>');
 				}
 			});
 		}
@@ -8584,7 +8605,91 @@ var StrikeToken = function (_BaseToken) {
 exports.StrikeToken = StrikeToken;
 
 /***/ }),
-/* 30 */
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _require = __webpack_require__(1),
+    BaseToken = _require.BaseToken;
+
+var Inline = __webpack_require__(0);
+
+var UnderlineToken = function (_BaseToken) {
+	_inherits(UnderlineToken, _BaseToken);
+
+	function UnderlineToken(contentTokens) {
+		_classCallCheck(this, UnderlineToken);
+
+		var _this = _possibleConstructorReturn(this, (UnderlineToken.__proto__ || Object.getPrototypeOf(UnderlineToken)).call(this));
+
+		_this.contentTokens = contentTokens;
+		return _this;
+	}
+
+	_createClass(UnderlineToken, [{
+		key: 'render',
+		value: function render(options, callback) {
+			Inline.render(this.contentTokens, options, function (error, content) {
+				if (error) {
+					callback(error, null);
+				} else {
+					callback(null, '<u>' + content + '</u>');
+				}
+			});
+		}
+	}], [{
+		key: 'match',
+		value: function match(scanner) {
+			scanner.mark(); // [start]
+
+			if (!scanner.ahead('__')) {
+				return null;
+			}
+
+			scanner.skip(+2);
+			scanner.mark(); // [start, contentStart]
+
+			if (!scanner.find('__')) {
+				scanner.popAndBack(); // [start]
+				scanner.popAndBack(); // []
+				return null;
+			}
+
+			var content = scanner.pop(); // [start]
+			scanner.skip(+2);
+
+			if (!content) {
+				scanner.popAndBack(); // []
+				return null;
+			}
+
+			return content;
+		}
+	}, {
+		key: 'parse',
+		value: function parse(scanner, match, options) {
+			var contentTokens = Inline.parse(match, options);
+			return new UnderlineToken(contentTokens);
+		}
+	}]);
+
+	return UnderlineToken;
+}(BaseToken);
+
+exports.UnderlineToken = UnderlineToken;
+
+/***/ }),
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9220,7 +9325,7 @@ function keys(object) {
 module.exports = assign;
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9259,7 +9364,7 @@ function first(array) {
 module.exports = first;
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9773,7 +9878,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	/** Expose `punycode` */
 	// Some AMD build optimizers, like r.js, check for specific condition patterns
 	// like the following:
-	if ("function" == 'function' && _typeof(__webpack_require__(16)) == 'object' && __webpack_require__(16)) {
+	if ("function" == 'function' && _typeof(__webpack_require__(15)) == 'object' && __webpack_require__(15)) {
 		!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
 			return punycode;
 		}.call(exports, __webpack_require__, exports, module),
@@ -9793,10 +9898,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		root.punycode = punycode;
 	}
 })(undefined);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)(module), __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)(module), __webpack_require__(5)))
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9890,7 +9995,7 @@ var isArray = Array.isArray || function (xs) {
 };
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9981,17 +10086,17 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.decode = exports.parse = __webpack_require__(33);
-exports.encode = exports.stringify = __webpack_require__(34);
+exports.decode = exports.parse = __webpack_require__(35);
+exports.encode = exports.stringify = __webpack_require__(36);
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10179,10 +10284,10 @@ exports.encode = exports.stringify = __webpack_require__(34);
     attachTo.setImmediate = setImmediate;
     attachTo.clearImmediate = clearImmediate;
 })(typeof self === "undefined" ? typeof global === "undefined" ? undefined : global : self);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(14)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(13)))
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10236,12 +10341,12 @@ exports._unrefActive = exports.active = function (item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(36);
+__webpack_require__(38);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10270,8 +10375,8 @@ exports.clearImmediate = clearImmediate;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var punycode = __webpack_require__(32);
-var util = __webpack_require__(39);
+var punycode = __webpack_require__(34);
+var util = __webpack_require__(41);
 
 exports.parse = urlParse;
 exports.resolve = urlResolve;
@@ -10354,7 +10459,7 @@ slashedProtocol = {
   'gopher:': true,
   'file:': true
 },
-    querystring = __webpack_require__(35);
+    querystring = __webpack_require__(37);
 
 function urlParse(url, parseQueryString, slashesDenoteHost) {
   if (url && util.isObject(url) && url instanceof Url) return url;
@@ -10956,7 +11061,7 @@ Url.prototype.parseHost = function () {
 };
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10980,20 +11085,20 @@ module.exports = {
 };
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _defaults = __webpack_require__(20);
+var _defaults = __webpack_require__(19);
 var escapeHtml = __webpack_require__(8);
-var Block = __webpack_require__(18);
+var Block = __webpack_require__(17);
 
 function createOptions(options) {
 	return _defaults(options, {
-		blockTypes: __webpack_require__(17),
-		tokenTypes: __webpack_require__(19),
+		blockTypes: __webpack_require__(16),
+		tokenTypes: __webpack_require__(18),
 		sanitize: _defaults({ allowedAttrs: { '*': ['style'] } }, escapeHtml.defaultOptions)
 	});
 }

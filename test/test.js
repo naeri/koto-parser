@@ -71,18 +71,32 @@ describe('Blocks', function() {
 });
 
 describe('Tokens', function() {
-	it('Bold Emphasis', function(done) {
+	it('Bold', function(done) {
 		renderAndTest('**Bold**', {
 			blockTypes: [require('../lib/blocks/paragraph').ParagraphBlock],
-			tokenTypes: [require('../lib/tokens/emphasis').BoldToken]
+			tokenTypes: [require('../lib/tokens/bold').BoldToken]
 		}, '<p><strong>Bold</strong></p>', done);
 	});
 
-	it('Italic Emphasis', function(done) {
+	it('Italic', function(done) {
 		renderAndTest('*Italic*', {
 			blockTypes: [require('../lib/blocks/paragraph').ParagraphBlock],
-			tokenTypes: [require('../lib/tokens/emphasis').ItalicToken]
+			tokenTypes: [require('../lib/tokens/italic').ItalicToken]
 		}, '<p><i>Italic</i></p>', done);
+	});
+
+	it('Underline', function(done) {
+		renderAndTest('__Underline__', {
+			blockTypes: [require('../lib/blocks/paragraph').ParagraphBlock],
+			tokenTypes: [require('../lib/tokens/underline').UnderlineToken]
+		}, '<p><u>Underline</u></p>', done);
+	});
+
+	it('Strike', function(done) {
+		renderAndTest('~~Strike~~', {
+			blockTypes: [require('../lib/blocks/paragraph').ParagraphBlock],
+			tokenTypes: [require('../lib/tokens/strike').StrikeToken]
+		}, '<p><del>Strike</del></p>', done);
 	});
 
 	it('Link', function(done) {
@@ -97,13 +111,6 @@ describe('Tokens', function() {
 			blockTypes: [require('../lib/blocks/paragraph').ParagraphBlock],
 			tokenTypes: [require('../lib/tokens/image').ImageToken]
 		}, '<p><img title="Image Title" src="https://image-src/"></p>', done);
-	});
-
-	it('Strike', function(done) {
-		renderAndTest('~~Strike~~', {
-			blockTypes: [require('../lib/blocks/paragraph').ParagraphBlock],
-			tokenTypes: [require('../lib/tokens/strike').StrikeToken]
-		}, '<p><strike>Strike</strike></p>', done);
 	});
 
 	it('Code', function(done) {
