@@ -39,13 +39,13 @@ describe('Blocks', function() {
 	it('Bulletin List', function(done) {
 		renderAndTest('- Item 1\n  - Child 1\n  - Child 2\n- Item 2', {
 			blockTypes: [require('../lib/blocks/list').ListItemBlock]
-		}, '<ul><li>Item 1</li><li>Item 2<ul><li>Child 1</li><li>Child 2</li></ul></li></ul>', done);
+		}, '<ul><li>Item 1<ul><li>Child 1</li><li>Child 2</li></ul></li><li>Item 2</li></ul>', done);
 	});
 
 	it('Ordered List', function(done) {
 		renderAndTest('1. Item 1\n  1. Child 1\n  2. Child 2\n2. Item 2', {
 			blockTypes: [require('../lib/blocks/list').ListItemBlock]
-		}, '<ol><li>Item 1</li><li>Item 2<ol><li>Child 1</li><li>Child 2</li></ol></li></ol>', done);
+		}, '<ol><li>Item 1<ol><li>Child 1</li><li>Child 2</li></ol></li><li>Item 2</li></ol>', done);
 	});
 
 	it('Definition List', function(done) {
