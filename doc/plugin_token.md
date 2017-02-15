@@ -8,7 +8,7 @@ overriding `static match()`, `static parse()`, and `render()`.
 `BaseToken` is in `/lib/tokens/base.js`. So you can import it by ..
 
 ```javascript
-const {BackToken} = require('koto-parser/lib/tokens/base');
+const {BaseToken} = require('koto-parser/lib/tokens/base');
 ```
 
 ### static match(scanner)
